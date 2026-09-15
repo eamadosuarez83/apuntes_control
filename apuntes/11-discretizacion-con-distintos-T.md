@@ -219,28 +219,37 @@ $$
 
 $$
 G(z) = \frac{K\,(z+1)^2}
-{(z - 1.3)\,(z - 0.00135)\,(z + 0.00173)}
+{(z - 0.77)\,(z - 0.00135)\,(z + 0.00173)}
 $$
 
 El par complejo se junta en un binomio:
 
 $$
 z^2 + z\,(0.00173 - 0.00135) + 2.33\times10^{-6}
+= z^2 + 380\times10^{-6}\,z + 2.33\times10^{-6}
 $$
 
-$$
-1 = \frac{K\,(z+1)^2}{z^2 + 380\times10^{-6}\,z + 2.33\times10^{-6}}
-$$
+Imponiendo ganancia unitaria en $z=1$:
 
 $$
-1 = \frac{4K}{1}
+1 = \frac{K\,(1+1)^2}{(1 - 0.77)\left(1 + 380\times10^{-6} + 2.33\times10^{-6}\right)}
+= \frac{4K}{0.2301}
 \qquad\Longrightarrow\qquad
-K = \tfrac{1}{4}
+K = 0.0575
 $$
 
 $$
 \boxed{\;
-G(z) = \frac{0.25\,(z+1)^2}
-{(z - 1.3)\left(z^2 + 360\times10^{-6}\,z + 2.33\times10^{-6}\right)}
+G(z) = \frac{0.0575\,(z+1)^2}
+{(z - 0.77)\left(z^2 + 380\times10^{-6}\,z + 2.33\times10^{-6}\right)}
 \;}
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #43 y #44: el cuaderno escribe (z-1.3) en
+     vez de (z-0.77) -- z1=0.77 ya estaba calculado 3 lineas antes, 1.3 es
+     aprox. 1/0.77 (parece una inversion accidental al copiar). Con (z-1.3)
+     la condicion "1=4K/1" ni siquiera se sostiene (K saldria negativo).
+     Corregido a (z-0.77) en el polo y recalculada K en consecuencia.
+     Tambien se unifico 380e-6 (el valor que da el propio desarrollo de la
+     linea de arriba) en vez de 360e-6 que aparecia solo en el resultado
+     final encuadrado. -->

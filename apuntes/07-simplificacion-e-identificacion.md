@@ -147,14 +147,23 @@ $$
 
 $$
 G(s) = \frac{Y(s)}{X(s)}
-= \frac{0.4\,(1.44)}{s^2 + 2\,(0.1479)(1.44)\,s + 1.44^2}
+= \frac{K\,\omega_n^2}{s^2 + 2\,(0.1479)(1.44)\,s + 1.44^2}
+= \frac{0.4\,(1.44)^2}{s^2 + 2\,(0.1479)(1.44)\,s + 1.44^2}
 $$
 
 $$
 \boxed{\;
-G(s) = \frac{0.56}{s^2 + 0.425952\,s + 2.0736}
+G(s) = \frac{0.829}{s^2 + 0.426\,s + 2.0736}
 \;}
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #32: el cuaderno pone 0.56 (= K*wn, no
+     K*wn^2) como numerador. Un sistema de 2do orden estandar lleva K*wn^2 en
+     el numerador para que la ganancia estatica salga K: G(0)=K*wn^2/wn^2=K.
+     Con 0.56 la ganancia estatica da 0.56/2.0736=0.27, no el K=0.4 del
+     ensayo -- no reproduce y_ss=0.8 ante el escalon de amplitud 2 (da 0.54).
+     Corregido a 0.829=0.4*1.44^2. La figura ya estaba generada con el
+     numerador correcto (por eso sí reproducía el ensayo). -->
 
 ![Respuesta del modelo identificado](../apoyo/figuras/respuesta_identificacion.svg)
 
@@ -246,6 +255,11 @@ $$
 
 $$
 \boxed{\;
-G(s) = \frac{2.07}{s^2 + 0.3685\,s + 2.07}
+G(s) = \frac{1.865}{s^2 + 0.3685\,s + 2.073}
 \;}
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #45: mismo error que el primer ejemplo
+     pero al reves: el cuaderno deja solo omega_n^2=2.07 como numerador,
+     olvidando el factor K=0.9. Con K*wn^2=0.9*1.4398^2=1.865 la ganancia
+     estatica sale G(0)=1.865/2.073=0.9=K_st, coherente con el ensayo. -->

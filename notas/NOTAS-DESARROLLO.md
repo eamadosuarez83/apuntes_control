@@ -325,8 +325,60 @@ cuaderno; las correcciones van aquí, no en el texto.
     Falta cerrar cómo se incorpora $z^{-d}$ al modelo y qué pasa cuando el
     retardo no es múltiplo entero de $T$.
 
+## Corrección de errores aritméticos (fase de evaluación de contenido)
+
+A diferencia del resto de este documento (que solo *registra* errores sin
+tocar el texto de las clases, ver "Criterio" en el README), en esta pasada
+sí se corrigieron directo en los `.md` los errores aritméticos ya
+identificados arriba — a pedido explícito, para poder estudiar de este
+material con confianza en los números. Cada corrección queda marcada con un
+comentario HTML `<!-- Nota fig. NOTAS-DESARROLLO.md #N: ... -->` en el punto
+exacto del archivo (invisible en el PDF, visible en el `.md` fuente), para
+poder rastrear qué se tocó y por qué sin tener que volver a este archivo.
+
+| # | Archivo | Qué se corrigió |
+|---|---|---|
+| 14 | `04-transformada-z-y-mapeo.md` | $K=5.6\times10^{-3}\to 5.65\times10^{-3}$, con el despeje explícito |
+| 26 | `06-respuesta-transitoria-en-z.md` | $\zeta=\pi/\omega_n=0.735\to\zeta=\sigma/\omega_n=0.234$ (fórmula y valor) |
+| 27 | `06-respuesta-transitoria-en-z.md` | $K_{st}=15.33\to13.33$ (variante del ejercicio, polo en 0.7) |
+| — | `06-respuesta-transitoria-en-z.md` | Efecto en cascada de #28 (σ=0.5602→0.5579): recalculados $M_p$, $y_p$, $t_s$, $\beta$, el criterio ×5 y $\omega_n$ |
+| 32 | `07-simplificacion-e-identificacion.md` | Numerador del primer modelo identificado: $0.56\to K\omega_n^2=0.829$ |
+| 45 | `07-simplificacion-e-identificacion.md` | Mismo error al revés en el segundo ejemplo: $2.07\to K\omega_n^2=1.865$ |
+| 39 | `10-pares-de-transformada-z.md` | Par del coseno: se perdía el factor $\tfrac12$ al sumar las series — resultado quedaba el doble. Reescrita la derivación completa con el $\tfrac12$ explícito, y unificada la notación a $\omega T$ (#40) |
+| 43 | `11-discretizacion-con-distintos-T.md` | Caso 4: $(z-1.3)\to(z-0.77)$ (el polo ya calculado, `1.3` parece $1/0.77$ invertido por accidente) — recalculada $K$ en consecuencia ($0.25\to0.0575$) |
+| 44 | `11-discretizacion-con-distintos-T.md` | Mismo caso: unificado $380\times10^{-6}$ (el que da el propio desarrollo) en vez de $360\times10^{-6}$ que aparecía solo en el resultado encuadrado |
+
+**No se tocó** el punto #41 (pág. 50, $K=0.2445$): ahí el valor final ya es
+correcto, solo le falta un paso intermedio en el desarrollo — no es un
+error, es un vacío menor, se deja para una revisión de redacción aparte.
+
+## Vacíos de contenido completados
+
+Se agregó teoría + ejercicio resuelto para los temas del propio temario
+(cap. 1) que nunca llegaron a aparecer en el cuaderno transcrito:
+
+| Tema | Vacío original | Dónde quedó | Qué se agregó |
+|---|---|---|---|
+| Retenedor de orden cero (ZOH) | Se usaba la fórmula $(1-e^{-Ts})/s$ sin derivarla | `04-transformada-z-y-mapeo.md` | Derivación desde el pulso rectangular, respuesta en frecuencia (sinc, retardo de fase $T/2$), ejercicio de discretización con ZOH |
+| Retenedor de orden uno (FOH) | #24, nunca aparecía | `04-transformada-z-y-mapeo.md` | $G_{h1}(s)$, comparación con ZOH y por qué casi no se usa en la práctica |
+| Transformación bilineal | #24, #48, nunca aparecía pese a estar en el temario de Unidad 1 | `04-transformada-z-y-mapeo.md` | Derivación desde la regla trapezoidal, propiedad de preservar estabilidad, *frequency warping*, ejercicio comparando contra el mapeo exacto ($z=e^{Ts}$) sobre la misma planta del ejercicio de ZOH |
+| Sintonización del PID | #21, objetivo declarado de la Unidad 3, nunca aparecía | `05-pid-y-control-on-off.md` | Ziegler-Nichols (curva de reacción y ganancia última), con tablas y un ejemplo numérico cada uno, más el problema del *windup* y anti-windup por *clamping* |
+| Margen de fase | #47, nunca aparecía | `09-error-estacionario-y-estabilidad.md` | Definición, comparación con MG, ejemplo sobre el mismo sistema ilustrativo de la figura de MG (mismo $K$, los dos márgenes dan negativo — se verifica que concuerdan), rangos típicos de diseño |
+| Criterio de Jury | #46, #48, Routh se aplicaba a sistemas discretos sin justificar por qué | `09-error-estacionario-y-estabilidad.md` | Por qué Routh solo no alcanza, los dos caminos válidos (bilineal+Routh vs. Jury directo), tabla general, caso particular $n=2$ con ejemplo (reutilizando el denominador $z^2-1.6z+0.8$ ya usado en otro capítulo) |
+
+La figura `margen_ganancia.svg`/`.py` (`apoyo/figuras/frecuencia.py`) se
+extendió para marcar **ambos** márgenes sobre el mismo diagrama de Bode
+— se reutiliza una sola figura entre las dos secciones en vez de duplicar
+el gráfico.
+
 ## Pendientes
 
 - Transcribir las páginas siguientes (falta de la Unidad 1: retenedores de orden
   cero y uno en detalle, transformación bilineal; y toda la Unidad 2).
+  *(Actualización: retenedores y bilineal ya se completaron como contenido
+  complementario, ver sección de arriba — pero siguen sin transcribirse del
+  cuaderno físico, si en algún momento aparecen esas páginas hay que
+  cotejar contra lo que se agregó acá.)*
 - Decidir si al final se arma un PDF único con todos los lotes o uno por archivo.
+  *(Resuelto: se arma `libro-completo.pdf` con `apoyo/build.sh libro`, y se
+  mantienen también los PDFs individuales por clase en `pdf/`.)*

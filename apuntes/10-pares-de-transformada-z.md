@@ -58,47 +58,55 @@ $X(z) = \dfrac{z}{z-a}$)*
 Identidades de partida:
 
 $$
-\operatorname{sen}\omega t = \frac{e^{j\omega t} - e^{-j\omega t}}{2j}
+\operatorname{sen}(\omega n T) = \frac{e^{j\omega n T} - e^{-j\omega n T}}{2j}
 \qquad
-\cos \omega t = \frac{e^{j\omega t} + e^{-j\omega t}}{2}
+\cos(\omega n T) = \frac{e^{j\omega n T} + e^{-j\omega n T}}{2}
+$$
+
+Con $x(nT) = \cos(\omega n T)$, la transformada es la serie muestreada:
+
+$$
+X(z) = \sum_{n=0}^{\infty} \cos(\omega n T)\,z^{-n}
+= \frac{1}{2}\sum_{n=0}^{\infty} e^{j\omega n T} z^{-n}
++ \frac{1}{2}\sum_{n=0}^{\infty} e^{-j\omega n T} z^{-n}
+$$
+
+Cada suma es la serie geométrica del par exponencial ya visto (con
+$a \to e^{\mp j\omega T}$). El factor $\tfrac12$ de la identidad del coseno
+**se mantiene** al sumar, no se pierde:
+
+$$
+X(z) = \frac{1}{2}\left[
+\frac{1}{1 - e^{j\omega T} z^{-1}} + \frac{1}{1 - e^{-j\omega T} z^{-1}}
+\right]
 $$
 
 $$
-\cos \omega t \;\longrightarrow\;
-\sum_{n=0}^{\infty}\frac{e^{j\omega t}}{2} z^{-n}
-+ \sum_{n=0}^{\infty}\frac{e^{-j\omega t}}{2} z^{-n}
+= \frac{1}{2}\cdot
+\frac{\left(1 - e^{-j\omega T} z^{-1}\right) + \left(1 - e^{j\omega T} z^{-1}\right)}
+{\left(1 - e^{j\omega T} z^{-1}\right)\left(1 - e^{-j\omega T} z^{-1}\right)}
+= \frac{1}{2}\cdot
+\frac{2 - \left(e^{j\omega T} + e^{-j\omega T}\right) z^{-1}}
+{1 - \left(e^{j\omega T} + e^{-j\omega T}\right) z^{-1} + z^{-2}}
 $$
 
-Sumando las dos series geométricas:
+Usando de nuevo la identidad del coseno en numerador y denominador
+($e^{j\omega T} + e^{-j\omega T} = 2\cos\omega T$):
 
 $$
-\frac{1}{1 - e^{j\omega} z^{-1}} + \frac{1}{1 - e^{-j\omega} z^{-1}}
-$$
-
-$$
-= \frac{1 - e^{-j\omega n} z^{-1} + 1 - e^{j\omega n} z^{-1}}
-{\left(1 - e^{j\omega n} z^{-1}\right)\left(1 - e^{-j\omega n} z^{-1}\right)}
-$$
-
-$$
-= \frac{2 - \left(e^{-j\omega n} + e^{j\omega n}\right) z^{-1}}
-{1 - e^{-j\omega n} z^{-1} - e^{j\omega n} z^{-1}
-+ e^{\,j(\omega n - \omega n)} z^{-2}}
-$$
-
-Usando de nuevo la identidad del coseno en numerador y denominador:
-
-$$
-= \frac{2 - z^{-1}\,(2\cos \omega n)}
-{1 - \left(e^{-j\omega} + e^{j\omega}\right) z^{-1} + z^{-2}}
-= \frac{2 - z^{-1}\,2\cos \omega n}
-{1 - 2\cos \omega n\; z^{-1} + z^{-2}}
+X(z) = \frac{1}{2}\cdot
+\frac{2 - 2\cos(\omega T)\,z^{-1}}{1 - 2\cos(\omega T)\,z^{-1} + z^{-2}}
+= \frac{1 - \cos(\omega T)\,z^{-1}}{1 - 2\cos(\omega T)\,z^{-1} + z^{-2}}
 $$
 
 $$
 \boxed{\;
-\frac{2\left(1 - z^{-1}\cos\omega\right)}
-{1 - 2\cos\omega\,z^{-1} + z^{-2}}
-= \frac{2\left(z^2 - z\cos\omega\right)}{z^2 - 2\cos\omega\,z + 1}
+X(z) = \frac{z^2 - z\cos(\omega T)}{z^2 - 2\cos(\omega T)\,z + 1}
 \;}
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #39: el cuaderno pierde el factor 1/2 al
+     sumar las dos series (queda con el doble del resultado correcto).
+     Reescrita la derivacion completa llevando el 1/2 explicito paso a paso
+     para que no se pueda perder, y unificada la notacion a omega*T (el
+     cuaderno mezclaba omega y omega*n en los exponentes -- NOTAS #40). -->

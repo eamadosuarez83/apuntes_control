@@ -66,15 +66,20 @@ $$
 De ahí se toman:
 
 $$
-\sigma = 0.5602
+\sigma = 0.5579
 \qquad
 \omega_d = 2.315
 $$
 
+<!-- Nota fig. NOTAS-DESARROLLO.md #28: el cuaderno calcula bien sigma=0.55785
+     dos lineas arriba, pero aqui lo reescribe como 0.5602 sin explicacion y
+     usa ese valor en todo lo que sigue. Corregido a 0.5579 (el valor propio
+     ya calculado), y recalculado lo que dependia de el. -->
+
 ### Sobrepaso
 
 $$
-M_p = e^{-\frac{\sigma\pi}{\omega_d}} = 0.4675
+M_p = e^{-\frac{\sigma\pi}{\omega_d}} = 0.4691
 $$
 
 ### Valor en estado estable
@@ -95,7 +100,7 @@ $$
 ### Amplitud pico
 
 $$
-y_p = y_{ss}\,(1 + M_p) = 9.78
+y_p = y_{ss}\,(1 + M_p) = 9.80
 $$
 
 ---
@@ -115,14 +120,14 @@ $$
 ### Tiempo de establecimiento
 
 $$
-t_s = \frac{4}{\sigma} = 7.14\;\text{s} = 36\;\text{muestras}
+t_s = \frac{4}{\sigma} = 7.17\;\text{s} \approx 36\;\text{muestras}
 $$
 
 ### Tiempo de levantamiento
 
 $$
 \beta = \tan^{-1}\!\left(\frac{\omega_d}{\sigma}\right)
-= \tan^{-1}\!\left(\frac{2.315}{0.5602}\right) = 1.33
+= \tan^{-1}\!\left(\frac{2.315}{0.5579}\right) = 1.33
 $$
 
 $$
@@ -146,7 +151,7 @@ $$
 el otro polo no impacta. Aquí:
 
 $$
-0.5602 \times 5 = 2.801
+0.5579 \times 5 = 2.789
 \qquad\text{frente a}\qquad
 s_3 = -4.58
 $$
@@ -154,10 +159,15 @@ $$
 ## Frecuencia natural y amortiguamiento
 
 $$
-\omega_n = \sqrt{\sigma^2 + \omega_d^2}
+\omega_n = \sqrt{\sigma^2 + \omega_d^2} = 2.381
 \qquad
-\zeta = \frac{\pi}{\omega_n} = 0.735
+\zeta = \frac{\sigma}{\omega_n} = 0.234
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #26: el cuaderno anota zeta=pi/omega_n=0.735.
+     La formula correcta es zeta=sigma/omega_n (el coseno del angulo del polo
+     respecto al eje real negativo, no una razon con pi). Corregidos formula
+     y valor. -->
 
 ---
 
@@ -172,10 +182,13 @@ $$
 $$
 s_3 = \frac{1}{0.2}\ln(0.7) = -1.78
 \qquad
-K_{st} = 15.33
+K_{st} = \frac{0.8}{(0.3)(0.2)} = 13.33
 \qquad
 \text{sobrepico: } 23.5\%
 $$
+
+<!-- Nota fig. NOTAS-DESARROLLO.md #27: el cuaderno anota K_st=15.33; con los
+     datos de esta misma variante da 13.33. Corregido. -->
 
 ### Si se cambia el cero a $0.7$
 
