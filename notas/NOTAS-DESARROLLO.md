@@ -641,3 +641,86 @@ porque babel ya espacia el `%`. Se corrigió con
 `\,\%` nunca**. En la misma pasada se cambiaron los `~` sueltos delante de
 un número (`~8.8 V`) por "unos 8.8 V", porque en LaTeX el `~` es un
 espacio duro y no se ve.
+
+### Procesado: los scripts de clase (capítulos 02 y 05)
+
+Traducidos los cuatro archivos que quedaban en la raíz de
+`control_digital/`. Solo va la versión Python, según lo decidido.
+
+| Original | Qué era | Dónde quedó |
+|---|---|---|
+| `clase1.m` | $G=s/[(s+2)(s^2+s+8)]$ + `ltiview` | cap. 02 — el cero en el origen |
+| `clase3` y `clase3.m` | `ilaplace` de $1/[s(s^2+4)]$ y $1/[s(s^2-s+4)]$ | cap. 02 — verificación con `sympy` |
+| `clase2.m` | PID con $K=386$, $T_i=900$, $T_d=1000$ | cap. 05 — crítica de la sintonía |
+| `clase4.slx` | Simulink: `Relay` + `Random Number` + `Manual Switch` | cap. 05 — on-off con ruido |
+
+**Los dos `clase3` ya estaban en el cuaderno.** Son los ejercicios "Tarea —
+polos en el semiplano derecho" y "Segundo ejercicio — polos sobre el eje
+imaginario", resueltos a mano por fracciones parciales; los `.m` eran la
+comprobación en MATLAB. Así que el aporte no es contenido nuevo sino la
+verificación con `sympy` y una figura que pone los dos casos juntos: los
+scripts difieren en **un solo signo** ($s^2+4$ contra $s^2-s+4$) y eso
+separa la oscilación sostenida de la divergente. Se agregó `sympy` al venv.
+
+**`clase1.m` sí era contenido nuevo** y resultó el más didáctico de los
+cuatro: un cero en el origen anula la ganancia de DC ($G(0)=0$), así que
+la respuesta al escalón sube a 0.09, oscila y **vuelve a cero** aunque los
+polos sean perfectamente estables. Sirve para decir algo que el curso no
+decía: una planta con cero en el origen no se puede llevar a una
+referencia constante distinta de cero por realimentación unitaria.
+
+**`clase2.m` fue el hallazgo.** Las ganancias parecían de tanteo y lo son,
+pero lo interesante es *cómo* se demuestra. Verificado corriendo el código:
+
+| | valor |
+|---|---|
+| Polos de lazo cerrado | $-386\,000$ y $-0.000507\pm0.000924j$ |
+| Estable | sí, y con error estacionario cero |
+| $t_s$ al 2 % | nunca sale de la banda |
+| $t_s$ al 0.5 % | **2053 s = 34 min** |
+| $t_s$ al 0.1 % | 5301 s = 1.5 h |
+| $K_d = K\,T_d$ | **386 000** |
+| $\lvert U/N\rvert$ a 100 rad/s | 9990 |
+
+O sea: el lazo *es* estable y en una simulación de seis segundos se ve
+impecable. Lo que está mal es que los polos están separados por nueve
+órdenes de magnitud. Se documentó con dos paneles —los primeros 6 s y la
+cola lenta en minutos— porque el contraste entre "parece perfecto" y
+"tarda media hora" es justamente la lección.
+
+Se agregó una sintonía diseñada por ubicación de polos ($K_p=22$,
+$K_i=59$, $K_d=7.5$, o $K=22$, $T_i=0.373$, $T_d=0.341$) que da
+$M_p=10.9\,\%$ y $t_s=1.43$ s, y de paso la **derivada filtrada**
+($T_ds \to T_ds/(1+T_ds/N)$, $N=10$), que baja el pico de $\lvert U/N\rvert$
+de 75 000 a 242 a cambio de 7 puntos de sobrepaso. Ese tema no estaba en
+ningún lado del curso y es cómo se implementa un PID de verdad.
+
+**Rendimiento inesperado de Routh**: con control proporcional sobre esta
+planta, la condición de Routh se reduce a $3(10+K) > 16+3K$, o sea
+$14 > 0$ — **se cumple para todo $K$**. Pero $\zeta$ cae de 0.151 ($K=1$) a
+0.0009 ($K=386$). Y el centroide de las asíntotas del lugar de las raíces
+da exactamente 0, así que la asíntota *es* el eje imaginario: las ramas se
+le acercan sin cruzarlo. Los tres resultados dicen lo mismo desde tres
+lados distintos, y juntos son el mejor argumento de que Routh contesta
+sí-o-no, no "qué tan bien".
+
+**`clase4.slx`** no se puede leer en detalle (es binario), pero la lista de
+bloques alcanzó: `Relay` + `Random Number` + `Manual Switch` = el
+experimento era ver qué le hace el ruido a un on-off. Simulado en Python:
+43 conmutaciones/s sin histéresis contra 9 con $\Delta=1.5$, a cambio de
+que el rizado suba de 2.8 a 4.9. El capítulo ya tenía la histéresis pero
+justificada solo como "para que no conmute todo el tiempo"; con ruido el
+argumento es mucho más fuerte y se puede cuantificar.
+
+Figuras nuevas en `apoyo/figuras/clases_matlab.py`: `clase1_cero_origen`,
+`clase3_estabilidad`, `clase2_pid`, `clase4_onoff_ruido`. Más 10
+ejercicios nuevos con respuestas (5 en cada capítulo).
+
+**Nota de armado de figuras**: dos de las cuatro hubo que rehacerlas
+porque la primera versión no mostraba nada. En `clase2_pid` el panel
+derecho a escala de horas se veía como una línea recta en 1.0 (la cola
+lenta tiene amplitud chica) — se arregló haciendo zoom vertical a
+0.985–1.004. En `clase4_onoff_ruido` el gráfico de $u(t)$ sobre 30 s era un
+rectángulo negro sólido — se arregló mostrando una ventana ampliada de 4 s.
+Conviene recordarlo: **si el fenómeno es de amplitud chica o de frecuencia
+alta, hay que hacer zoom o la figura no dice nada.**

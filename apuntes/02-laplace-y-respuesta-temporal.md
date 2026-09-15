@@ -499,3 +499,127 @@ $$
 
 Oscilación sostenida, sin envolvente que decaiga ni crezca: es el caso
 marginal de los polos sobre el eje imaginario.
+
+## Los scripts de clase, rehechos en Python
+
+*Entre los archivos de la materia hay tres scripts de MATLAB de agosto de
+2018 que corresponden a este capítulo. Acá se rehacen con Python, se
+verifican contra lo que el cuaderno resolvió a mano, y se saca de ellos
+una conclusión que en su momento quedó implícita.*
+
+### `clase3.m` y `clase3`: la comprobación de los dos ejercicios de arriba
+
+Los dos scripts son casi idénticos y difieren en **un solo signo**:
+
+```matlab
+syms s
+g = 1/(s^2 + 4);        % clase3   (sin extensión)
+g = 1/(s^2 - s + 4);    % clase3.m
+x = 1/s;
+yt = ilaplace(g*x)
+```
+
+Son exactamente los dos ejercicios que el cuaderno resolvió a mano por
+fracciones parciales: el script era la verificación en MATLAB. El
+equivalente en Python usa `sympy`:
+
+```python
+import sympy as sp
+s, t = sp.Symbol('s'), sp.Symbol('t', positive=True)
+
+for g in (1/(s**2 + 4), 1/(s**2 - s + 4)):
+    print(sp.simplify(sp.inverse_laplace_transform(g/s, s, t)))
+```
+
+y devuelve
+
+$$
+\mathcal{L}^{-1}\left\{\frac{1}{s(s^2+4)}\right\}
+= \frac{\sin^2 t}{2} = \frac{1-\cos 2t}{4}
+$$
+
+$$
+\mathcal{L}^{-1}\left\{\frac{1}{s(s^2-s+4)}\right\}
+= \frac{1}{4}
+- \frac{e^{t/2}}{4}\cos\!\left(\frac{\sqrt{15}}{2}t\right)
++ \frac{\sqrt{15}}{60}\,e^{t/2}\sin\!\left(\frac{\sqrt{15}}{2}t\right)
+$$
+
+Las dos coinciden con lo resuelto a mano. Y puestas una al lado de la otra
+se ve de qué se trataba el ejercicio:
+
+![Un signo separa los dos casos](../apoyo/figuras/clase3_estabilidad.svg)
+
+| | polos | envolvente | resultado |
+|---|---|---|---|
+| $s^2+4$ | $\pm 2j$ | constante | oscila para siempre, amplitud fija |
+| $s^2-s+4$ | $0.5\pm1.936j$ | $e^{t/2}$ | oscila **creciendo**, sin límite |
+
+**El porqué**: la parte real del polo es el exponente de la envolvente.
+$\mathrm{Re}=0$ da $e^{0t}=1$ (amplitud constante) y $\mathrm{Re}=+0.5$ da
+$e^{0.5t}$, que se duplica cada $\ln 2/0.5 = 1.39$ s. El término $-s$ en el
+denominador —un signo— es lo que mueve los polos de un lado al otro del
+eje. Es el criterio de estabilidad del principio del capítulo, visto en la
+fórmula cerrada.
+
+*(Nota práctica: en la segunda gráfica el eje vertical es logarítmico a
+tramos —`symlog`— porque en escala lineal la señal se sale de la hoja
+antes de los 12 s.)*
+
+### `clase1.m`: lo que hace un cero en el origen
+
+```matlab
+s = tf('s');
+g = (s)/[(s+2)*(s^2+s+8)]
+ltiview(g)
+```
+
+Este no está en el cuaderno, y vale la pena por lo que muestra. En Python:
+
+```python
+import control as ct, numpy as np
+
+G = ct.tf([1, 0], np.polymul([1, 2], [1, 1, 8]))
+print(G.poles())     # -0.5 +- 2.784j  y  -2
+print(G.zeros())     # 0
+print(ct.dcgain(G))  # 0.0
+```
+
+![Cero en el origen](../apoyo/figuras/clase1_cero_origen.svg)
+
+Los polos son perfectamente normales —estables, con
+$\omega_n = 2.83$ y $\zeta = 0.177$, o sea muy poco amortiguados— pero la
+respuesta al escalón **sube apenas a 0.09, oscila y vuelve a cero**.
+
+**El porqué, que es el punto del script**: la ganancia de DC es
+$G(0)$, y con un cero en $s=0$ el numerador se anula:
+
+$$
+G(0) = \frac{0}{(0+2)(0+0+8)} = 0
+$$
+
+Un cero en el origen es un **derivador**: bloquea la componente continua y
+solo deja pasar los cambios. Por eso el sistema reacciona al *flanco* del
+escalón y después se olvida. Es el mismo principio de un capacitor en
+serie a la entrada de un amplificador, o de un tacómetro que mide
+velocidad y no posición.
+
+La curva gris de la figura es la misma planta **sin** el cero
+(normalizada a ganancia 1): ahí sí la respuesta se queda arriba. La
+diferencia entre las dos curvas es todo lo que hace el cero.
+
+**Consecuencia para control**: una planta con un cero en el origen **no se
+puede controlar a un valor constante distinto de cero** con realimentación
+unitaria — no importa cuánta ganancia se ponga, en estado estable la
+salida es cero. Si el objetivo es seguir una referencia constante, hay que
+cambiar la variable controlada (por ejemplo, controlar la integral de la
+salida).
+
+### Un detalle de traducción
+
+En los tres scripts aparece `g = (s)/[(s+2)*(s^2+s+8)]` con **corchetes**.
+En MATLAB los corchetes son concatenación de matrices, no agrupación;
+funciona por casualidad, porque concatenar un solo elemento devuelve ese
+elemento. En Python (y en MATLAB bien escrito) van paréntesis. Es un error
+inofensivo acá, pero deja de serlo apenas hay una coma o un espacio
+adentro.

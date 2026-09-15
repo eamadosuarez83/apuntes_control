@@ -44,10 +44,10 @@ las dos versiones — `.svg` para leer el Markdown en GitHub o en un visor, y
 | Archivo | Tema | Páginas del cuaderno |
 |---|---|---|
 | `01-fundamentos-control.md` | Temario, conceptos, lazo abierto y cerrado | 1–5 |
-| `02-laplace-y-respuesta-temporal.md` | Laplace, estabilidad, fracciones parciales | 6–15 |
+| `02-laplace-y-respuesta-temporal.md` | Laplace, estabilidad, fracciones parciales, scripts de clase en Python | 6–15 |
 | `03-modelado-ganancias-y-frecuencia.md` | Circuito RC, ganancias, Bode, muestreo | 16–20, 25, 26 |
 | `04-transformada-z-y-mapeo.md` | Transformada Z, mapeo de polos y ceros | 23, 24, 27–30 |
-| `05-pid-y-control-on-off.md` | Lazo cerrado, PID, on-off con histéresis | 21, 22 |
+| `05-pid-y-control-on-off.md` | Lazo cerrado, PID, sintonía, on-off con histéresis y ruido | 21, 22 |
 | `06-respuesta-transitoria-en-z.md` | Polo dominante, tiempos característicos | 31, 32, 35, 36 |
 | `07-simplificacion-e-identificacion.md` | Simplificar modelos, identificación | 37–41, 56, 57 |
 | `08-practica-motor.md` | Práctica del motor, divisor de tensión, identificación y discretización (informe de laboratorio) | 33, 34 |
