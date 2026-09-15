@@ -148,6 +148,56 @@ def lazo_integral_z(ext):
         d += dsp.Arrow().up().toy(s.S)
 
 
+def motor_dc(ext):
+    """Diagrama de bloques del motor DC: parte electrica, parte mecanica y
+    el lazo interno de la fem contraelectromotriz."""
+    with schemdraw.Drawing(file=f'motor_dc_sd{ext}', show=False) as d:
+        d.config(fontsize=11, unit=1.9)
+        d += dsp.Arrow().right().label('V(s)', loc='left')
+        s = d.add(_sum_labels(dsp.Sum().anchor('W')))
+        d += dsp.Arrow().right().at(s.E).length(0.7)
+        E = d.add(flow.Box(w=2.1, h=1.1).anchor('W')
+                  .label(r'$\dfrac{1}{L_a s + R_a}$'))
+        d += dsp.Arrow().right().at(E.E).length(0.6).label('I(s)', loc='top')
+        Kt = d.add(flow.Box(w=1.2, h=1.1).anchor('W').label('$K_t$'))
+        d += dsp.Arrow().right().at(Kt.E).length(0.6)
+        M = d.add(flow.Box(w=2.1, h=1.1).anchor('W')
+                  .label(r'$\dfrac{1}{J s + b}$'))
+        d += dsp.Line().right().at(M.E).length(0.6)
+        tap = d.add(dsp.Dot())
+        d += dsp.Arrow().right().length(1.0).label(r'$\Omega(s)$', loc='right')
+        d += dsp.Line().down().at(tap.center).length(2.0)
+        d += dsp.Line().left().length(0.8)
+        Ke = d.add(flow.Box(w=1.2, h=1.0).anchor('E').label('$K_e$'))
+        d += dsp.Arrow().left().at(Ke.W).tox(s.S)
+        d += dsp.Arrow().up().toy(s.S)
+
+
+def cadena_instrumentacion(ext):
+    """El lazo fisico completo: planta -> sensor -> acondicionamiento ->
+    ADC -> micro -> PWM -> driver -> actuador -> planta."""
+    with schemdraw.Drawing(file=f'cadena_instrumentacion_sd{ext}', show=False) as d:
+        d.config(fontsize=10, unit=1.6)
+        P = d.add(flow.Box(w=2.0, h=1.1).label('PLANTA'))
+        d += dsp.Arrow().right().at(P.E).length(0.7)
+        S = d.add(flow.Box(w=1.7, h=1.1).anchor('W').label('sensor'))
+        d += dsp.Arrow().right().at(S.E).length(0.6)
+        A = d.add(flow.Box(w=2.0, h=1.1).anchor('W').label('acond.'))
+        d += dsp.Arrow().right().at(A.E).length(0.6)
+        ADC = d.add(flow.Box(w=1.5, h=1.1).anchor('W').label('ADC'))
+        d += dsp.Arrow().down().at(ADC.S).length(1.5)
+        U = d.add(flow.Box(w=2.6, h=1.2).anchor('N').label(r'$\mu$C: control'))
+        d += dsp.Arrow().left().at(U.W).length(1.0)
+        PWM = d.add(flow.Box(w=1.6, h=1.1).anchor('E').label('PWM'))
+        d += dsp.Arrow().left().at(PWM.W).length(0.6)
+        DR = d.add(flow.Box(w=1.7, h=1.1).anchor('E').label('driver'))
+        d += dsp.Arrow().left().at(DR.W).length(0.6)
+        AC = d.add(flow.Box(w=1.9, h=1.1).anchor('E').label('actuador'))
+        d += dsp.Line().left().at(AC.W).length(1.0)
+        d += dsp.Line().up().toy(P.W)
+        d += dsp.Arrow().right().tox(P.W)
+
+
 if __name__ == '__main__':
     for backend, ext in (('svg', '.svg'), ('matplotlib', '.pdf')):
         schemdraw.use(backend)
@@ -158,3 +208,5 @@ if __name__ == '__main__':
         sistema_muestreado(ext)
         lazo_proporcional(ext)
         lazo_integral_z(ext)
+        motor_dc(ext)
+        cadena_instrumentacion(ext)

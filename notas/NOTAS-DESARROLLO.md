@@ -447,6 +447,92 @@ debajo del objetivo y por qué).
 nuevo sobre 12-13 en un `pendiente.txt` futuro, tratarlos como cualquier
 otro capítulo.
 
+## Capítulos 14-16: del papel al hardware (segunda revisión)
+
+Pedido textual: *"piensa en un estudiante que quiere aprender sistemas de
+control y desea entender de qué trata y cómo usarla para por medio de
+electrónica conocer los sistemas ya sea mecánico, químico, eléctrico y
+poder medir sus entradas y salidas y poder moldear su comportamiento (...)
+complementa temas, propón ejercicios nuevos, da el porqué"*.
+
+### El diagnóstico
+
+Leyendo el curso completo con esa pregunta en la mano, el hueco no era de
+teoría — era que **todo el material parte de una $G(s)$ ya dada**. El
+único modelado presente es el circuito RC del capítulo 3, y la
+instrumentación no aparece en ningún lado: el controlador "mide $y$" y
+"aplica $u$" como si esas dos flechas fueran gratis. Un estudiante podía
+terminar el curso sabiendo diseñar un PID y sin poder controlar nada real,
+porque le faltaban los dos extremos de la cadena.
+
+### Lo que se agregó
+
+| Capítulo | Qué cubre | Por qué faltaba |
+|---|---|---|
+| 14 — Modelado de sistemas físicos | método de 4 pasos, los 4 dominios (eléctrico/térmico/fluidos/mecánico) reducidos a la misma $K/(\tau s+1)$, motor DC completo con la fem como lazo interno, linealización en el punto de operación | sin esto no hay forma de conseguir la $G(s)$ del sistema propio |
+| 15 — Cadena de instrumentación | sensores por variable, 4-20 mA, resolución del encoder, acondicionamiento y bits útiles del ADC, filtro EMA y su costo en margen de fase, PWM como DAC, saturación y zona muerta del driver, criterio real para elegir $T$ | el lazo físico controla planta **más** electrónica, y eso cambia la estabilidad |
+| 16 — Proyecto integrador | identificación experimental por `curve_fit`, elección justificada de $T$, diseño del PI por cancelación de polo, el `for` que corre en el micro, verificación con cuantización y saturación puestas | cierra el ciclo completo una sola vez, de punta a punta |
+
+Se agregaron **15 ejercicios nuevos** (5 por capítulo) con sus respuestas
+desarrolladas, todos numéricos y del tipo "elegí un componente y
+justificá con un número", que es la habilidad que el curso no ejercitaba.
+
+### La tabla de analogías entre dominios
+
+El aporte conceptual más rentable del capítulo 14: los cuatro dominios
+comparten estructura (algo que acumula + algo que disipa $\Rightarrow$
+$\tau = RC$). Aprender a modelar uno alcanza para los cuatro, y la
+intuición del capacitor cargándose sirve igual para un horno. Es la
+respuesta directa a *"mecánico, químico, eléctrico"* del pedido.
+
+### El hallazgo pedagógico del capítulo 16
+
+Al simular el lazo completo con la cuantización del encoder puesta, el
+error final se estanca en $\approx 0.25$ rad/s. Buscando por qué, resultó
+ser **medio paso de cuantización del encoder** ($0.628/2 = 0.314$). No fue
+un resultado buscado — salió de la simulación — y se convirtió en la
+conclusión del capítulo: *la precisión de un lazo está acotada por la de
+su sensor, no por lo bueno que sea el controlador*. Es el argumento que
+justifica haber escrito los capítulos 14 y 15.
+
+### Figuras nuevas
+
+`motor_dc_sd` y `cadena_instrumentacion_sd` (schemdraw, en
+`bloques_schemdraw.py`) más cinco de matplotlib en un archivo nuevo,
+`apoyo/figuras/practica.py`: `linealizacion`, `pwm`, `filtro_ema`,
+`identificacion_motor`, `proyecto_lazo`.
+
+Dos problemas durante el armado, por si reaparecen:
+
+- Las funciones nuevas quedaron **después** del bloque
+  `if __name__ == '__main__'` de `bloques_schemdraw.py` y daban `NameError`
+  al invocarse. El bloque main tiene que quedar siempre al final del
+  archivo.
+- El lazo de realimentación de `cadena_instrumentacion` no cerraba
+  visualmente (la flecha subía a la nada). Se resolvió ruteando explícito:
+  izquierda desde el acondicionador, arriba hasta la altura de la planta
+  (`.toy(P.W)`), y recién ahí la flecha a la derecha (`.tox(P.W)`).
+
+### Verificación numérica
+
+Como en los capítulos 12-13, **ningún número se escribió sin correrlo
+antes**. Los valores que quedaron fijados como constantes del hilo
+conductor:
+
+| Magnitud | Valor | De dónde sale |
+|---|---|---|
+| $K$ del motor | 22.07 (rad/s)/V | $K_t/(R_ab+K_tK_e)$ con la hoja de datos del cap. 14 |
+| $\tau$ del motor | 14.71 ms | $R_aJ/(R_ab+K_tK_e)$ |
+| $T$ de muestreo | 5 ms | compromiso entre $\tau/10$ y la resolución del encoder |
+| Resolución del encoder | 0.628 rad/s | $2\pi/(4\cdot500\cdot0.005)$ |
+| PI | $K_p=0.0294$, $K_i=2.0$ | cancelación de polo, $K_p=K_i\tau$ |
+| Resultado del lazo | $t_s=75$ ms, 0 % sobrepaso, $u_{max}=7.43$ V | simulación con cuantización y saturación |
+| Identificación | recupera $K$ con 0.0 % y $\tau$ con 1.1 % de error | `curve_fit` sobre el ensayo simulado con ruido |
+
+La diferencia entre el $t_s$ teórico (91 ms, $4\tau_{lc}$) y el simulado
+(75 ms) se dejó explícita en el texto en vez de maquillarla: entra a la
+banda del 2 % antes de lo que predice la fórmula asintótica.
+
 ## Pendientes
 
 - Transcribir las páginas siguientes (falta de la Unidad 1: retenedores de orden

@@ -56,6 +56,9 @@ las dos versiones — `.svg` para leer el Markdown en GitHub o en un visor, y
 | `11-discretizacion-con-distintos-T.md` | Mapeo s→z con varios periodos de muestreo | 50–55 |
 | `12-tecnicas-clasicas-de-diseno.md` | Lugar de las raíces, Nyquist, compensadores adelanto/atraso | — (complemento, no sale del cuaderno) |
 | `13-complementos-digitales.md` | PID discreto, *dead-beat*, antialiasing, cuantización | — (complemento, no sale del cuaderno) |
+| `14-modelado-de-sistemas-fisicos.md` | De la física a $G(s)$: analogías entre dominios, motor DC, linealización | — (complemento, no sale del cuaderno) |
+| `15-instrumentacion-electronica.md` | Sensores, acondicionamiento, ADC, PWM, drivers, elección de $T$ | — (complemento, no sale del cuaderno) |
+| `16-proyecto-integrador-motor.md` | Proyecto completo: identificar, diseñar PI, programar y verificar | — (complemento, no sale del cuaderno) |
 
 **El escaneo del cuaderno terminó** en la página 57 (páginas 1–57
 transcritas por completo). Los capítulos 12 y 13 son contenido
