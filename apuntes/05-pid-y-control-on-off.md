@@ -161,6 +161,8 @@ una lección que no es la que parece a primera vista.*
 
 ### `clase2.m`: por qué esas ganancias no son una sintonía
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 s = tf('s');
 g = (s+3)/[(s+2)*(s^2+s+8)]
@@ -179,6 +181,8 @@ K_i = \frac{K}{T_i} = \frac{386}{900} = 0.429
 \qquad
 K_d = K\,T_d = 386\times1000 = 386\,000
 $$
+
+**Equivalente en Python:**
 
 ```python
 import control as ct, numpy as np
@@ -287,6 +291,11 @@ Python" hay que extraer primero qué hace, bloque por bloque, leyendo el
 XML que Simulink guarda adentro (`simulink/blockdiagram.xml`): tipo de
 cada bloque, sus parámetros, y las líneas que los conectan.
 
+**Reconstrucción del `.slx`** (no es código real del cuaderno — no existe
+como texto — sino la topología y los parámetros decodificados del XML,
+en formato de comentarios de MATLAB para que se lea de corrido con el
+resto de los scripts de esta sección):
+
 ```matlab
 % clase4.slx -- reconstruido leyendo simulink/blockdiagram.xml
 %
@@ -320,7 +329,7 @@ Switch` no alterna "medida limpia / con ruido" sobre una realimentación,
 que es lo que parecía a simple vista: alterna qué señal entra al
 `Relay`, el `Step` o el `Random Number`.
 
-Traducido a Python:
+**Equivalente en Python:**
 
 ```python
 import numpy as np

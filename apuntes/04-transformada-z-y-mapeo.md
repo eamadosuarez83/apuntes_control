@@ -167,10 +167,35 @@ $$
 
 ### Verificación por MATLAB
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 gFz = c2d(gF, T, 'matched')
 zpk(gFz)
 ```
+
+**Equivalente en Python.** `gF` no se definió explícito arriba (el
+cuaderno solo da sus polos, vía `pzmap(gf)`) — se reconstruye con esos
+tres polos y ganancia 1 (la ganancia real $K$ ya se calculó aparte, por
+la condición de ganancia unitaria en continua, así que acá solo importa
+verificar dónde caen los polos en $z$):
+
+```python
+import numpy as np
+import control as ct
+
+polos_s = [-62.8, -31.4+54.4j, -31.4-54.4j]
+den = np.real(np.poly(polos_s))
+gF = ct.tf([1], den)
+
+T = 0.005
+gFz = ct.sample_system(gF, T, method='matched')
+print(np.round(gFz.poles(), 4))
+```
+
+Da `[0.8233+0.2296j, 0.8233-0.2296j, 0.7305]` — exactamente los mismos
+valores que el cálculo a mano de arriba (sección 1), confirmando que el
+mapeo $z=e^{sT}$ hecho a mano coincide con lo que hace `c2d(...,'matched')`.
 
 ---
 
@@ -308,10 +333,26 @@ $$
 
 ### Rutina MATLAB
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 G = zpk([-0.03 -1.755], [0, 0, 1, 0.368], [0.2223], 1)
 rlocus(G)
 ```
+
+**Equivalente en Python:**
+
+```python
+import control as ct
+
+G = ct.zpk([-0.03, -1.755], [0, 0, 1, 0.368], 0.2223, dt=1)
+ct.root_locus(G)
+```
+
+`dt=1` porque el último argumento de `zpk` en MATLAB (`1`) es el periodo
+de muestreo — `G` es discreta, no continua, y `ct.zpk` necesita ese dato
+explícito para saber en qué dominio graficar el lugar de las raíces
+(dentro o fuera del círculo unitario, no del semiplano izquierdo).
 
 ---
 

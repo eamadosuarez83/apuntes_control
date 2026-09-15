@@ -875,3 +875,57 @@ iguales, como $(s+1)^2(s+5)$.
 Verificado numéricamente antes de escribir: la fórmula del libro para
 $\omega=2$ da $|G|=2.2627$, fase $=-118.74°$, coincide exacto con
 `ct.frequency_response` de `python-control`.
+
+### Gaps de MATLAB→Python sin cubrir, y falta de encabezados de separación
+
+Pedido del usuario, referenciando la sección por su numeración del PDF
+compilado ("2.1.5"): en el capítulo 02, la sección "1.5. En Matlab"
+(`feedback`) tenía el bloque de código MATLAB pero **no** su equivalente
+en Python — ni el snippet genérico ni el "Ejemplo real" que sigue. Pidió
+también auditar en general la separación entre bloques MATLAB y Python:
+que hubiera un encabezado explícito diciendo cuál es cuál, no solo un
+cambio de fence (```matlab a ```python) o una frase de transición suelta.
+
+**Barrido completo** de capítulos 01-11 (`grep -c '```matlab'` por
+archivo) para encontrar todos los bloques MATLAB del libro, no solo el
+que se reportó. Aparecieron cinco puntos más, dos con el mismo problema
+(MATLAB sin Python):
+
+| Capítulo | Sección | Problema |
+|---|---|---|
+| 02 | 1.5 "En Matlab" (`feedback` genérico) | sin Python — **el reportado** |
+| 02 | 1.5 "Ejemplo real" ($G=5/(s+2)$) | sin Python — **el reportado** |
+| 04 | 3.6 "Verificación por MATLAB" (`c2d matched`) | sin Python |
+| 04 | "Rutina MATLAB" (`zpk` + `rlocus`, ejemplo del lazo muestreado) | sin Python |
+| 07 | "Rutina MATLAB" (comparar `gs`, `gs1`, `gs2`) | sin Python |
+| 02 | `clase1.m`, `clase3`/`clase3.m` | ya tenían Python, sin encabezado |
+| 05 | `clase2.m`, `clase4.slx` | ya tenían Python, sin encabezado |
+
+Se completaron los tres gaps reales y se agregó el encabezado
+**"Código en MATLAB (del cuaderno):"** / **"Equivalente en Python:"**
+delante de cada bloque, en los ocho puntos de la tabla — no solo en el
+que se reportó, para que la convención sea uniforme en todo el libro.
+
+**Casos que necesitaron reconstrucción, no solo traducción directa**:
+
+- **Cap. 04, "Verificación por MATLAB"**: el `gF` que discretiza no está
+  definido explícito en el texto (el cuaderno solo da sus tres polos, vía
+  `pzmap(gf)`). Se reconstruyó `gF` con esos tres polos y ganancia 1 (la
+  ganancia real ya se calculó aparte por la condición de ganancia
+  unitaria) y se verificó con `ct.sample_system(gF, T, method='matched')`
+  que los polos en $z$ salen exactos a los que el cuaderno calculó a
+  mano: $0.7305$ y $0.8233\pm0.2296j$.
+- **Cap. 04, "Rutina MATLAB" (`zpk`+`rlocus`)**: traducido con
+  `ct.zpk(ceros, polos, ganancia, dt=1)` — el `dt=1` es necesario porque
+  el sistema es discreto (el `1` final del `zpk` de MATLAB es el periodo
+  de muestreo) y sin especificarlo el lugar de las raíces se graficaría
+  para el semiplano izquierdo en vez del círculo unitario.
+- **Cap. 07, "Rutina MATLAB"**: traducción directa de `gs`/`gs1`/`gs2`
+  comparando tres respuestas al escalón; se agregó una frase señalando
+  que las tres tienen la misma ganancia de DC ($-5$), que es justamente
+  el punto del ejercicio (las simplificaciones no alteran el estado
+  estable, solo el transitorio).
+
+Todo verificado corriendo el código antes de escribirlo (incluida la
+reconstrucción de `gF` del capítulo 04, que era el caso con más riesgo de
+error). Libro completo: 103 → **106 páginas**.

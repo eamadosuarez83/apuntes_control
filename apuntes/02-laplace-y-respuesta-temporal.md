@@ -142,6 +142,8 @@ real.*
 cerrado — hace, en una línea, exactamente la cuenta $F=G/(1+GH)$ que se
 dedujo a mano en el capítulo anterior:
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 [num, den] = feedback(num1, den1, num2, den2)
 % num1/den1 = G(s)  (trayectoria directa)
@@ -149,13 +151,30 @@ dedujo a mano en el capítulo anterior:
 % devuelve num/den = G/(1+G*H)
 ```
 
+**Equivalente en Python**, con la librería `control`:
+
+```python
+import control as ct
+
+G = ct.tf(num1, den1)   # trayectoria directa
+H = ct.tf(num2, den2)   # realimentacion (H=1 si es unitaria)
+F = ct.feedback(G, H)   # F = G/(1+G*H)
+```
+
+`ct.feedback` hace exactamente lo mismo que la versión de MATLAB, pero
+recibe y devuelve objetos `tf` en vez de parejas `[num, den]` sueltas —
+no hay diferencia funcional, solo de cómo se representa la función de
+transferencia.
+
 **Por qué está ahí**: a mano, multiplicar y sumar polinomios para armar
 $1+G\,H$ y simplificar es tedioso y fácil de arruinar con un error de
 álgebra — sobre todo con plantas de orden alto. `feedback` hace ese álgebra
 sin errores, para poder concentrarse en el diseño (elegir $G$, $H$) en vez
 de en la manipulación simbólica.
 
-**Ejemplo real — armar el lazo y determinar si es estable:**
+**Ejemplo real — armar el lazo y determinar si es estable.**
+
+**Código en MATLAB (del cuaderno):**
 
 ```matlab
 % Planta: G(s) = 5/(s+2)
@@ -174,6 +193,27 @@ p = roots(denF)
 sys = tf(numF, denF);
 step(sys)
 ```
+
+**Equivalente en Python:**
+
+```python
+import control as ct
+import matplotlib.pyplot as plt
+
+G = ct.tf([5], [1, 2])          # planta: G(s) = 5/(s+2)
+F = ct.feedback(G, 1)           # realimentacion unitaria (H=1)
+print(F)                        # F = 5/(s+7)
+
+p = F.poles()
+print(p)                        # [-7]  -> parte real negativa, sistema ESTABLE
+
+t, y = ct.step_response(F)      # verlo, no solo calcularlo
+plt.plot(t, y)
+plt.show()
+```
+
+Corrido y verificado: `F` sale $5/(s+7)$ y el único polo en $-7$,
+idéntico al resultado de MATLAB.
 
 Con el modelo masa-amortiguador de este mismo capítulo ($G(s)=1/(ms+b)$),
 el mismo patrón sirve para **diseñar**: si se le agrega una ganancia
@@ -513,6 +553,8 @@ Son el mismo ejercicio con **un solo signo** de diferencia. Primero
 `clase3` (sin extensión, el archivo tal cual está en la carpeta de la
 materia):
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 clc
 clear all;
@@ -524,7 +566,7 @@ y=g*x;
 yt=ilaplace(y)
 ```
 
-Equivalente en Python, con `sympy`:
+**Equivalente en Python**, con `sympy`:
 
 ```python
 import sympy as sp
@@ -540,6 +582,8 @@ print(yt)          # sin(t)**2/2
 Y `clase3.m`, que es el mismo script y solo cambia el signo del término
 lineal del denominador:
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 clc
 clear all;
@@ -550,6 +594,8 @@ x=1/s;
 y=g*x;
 yt=ilaplace(y)
 ```
+
+**Equivalente en Python:**
 
 ```python
 import sympy as sp
@@ -601,13 +647,17 @@ antes de los 12 s.)*
 
 ### `clase1.m`: lo que hace un cero en el origen
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 s = tf('s');
 g = (s)/[(s+2)*(s^2+s+8)]
 ltiview(g)
 ```
 
-Este no está en el cuaderno, y vale la pena por lo que muestra. En Python:
+Este no está en el cuaderno, y vale la pena por lo que muestra.
+
+**Equivalente en Python:**
 
 ```python
 import control as ct, numpy as np

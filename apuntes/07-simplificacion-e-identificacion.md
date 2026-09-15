@@ -47,6 +47,8 @@ $$
 
 ### Rutina MATLAB
 
+**Código en MATLAB (del cuaderno):**
+
 ```matlab
 clc
 clear all
@@ -58,6 +60,30 @@ gs1 = -10     / ((s^2 + s + 1)*(s + 2))
 gs2 = -5      / (s^2 + s + 1)
 step(gs, gs1, gs2)
 ```
+
+**Equivalente en Python:**
+
+```python
+import control as ct
+import matplotlib.pyplot as plt
+
+s = ct.tf('s')
+gs  = -(s+10) / ((s**2 + s + 1)*(s + 2))
+gs1 = -10     / ((s**2 + s + 1)*(s + 2))
+gs2 = -5      / (s**2 + s + 1)
+
+for nombre, G in (('completo', gs), ('G1 (sin cero)', gs1), ('G2 (sin polo lejano)', gs2)):
+    t, y = ct.step_response(G)
+    plt.plot(t, y, label=nombre)
+plt.legend()
+plt.show()
+```
+
+Corrido: las tres respuestas comparten la misma ganancia de DC ($-5$) —
+las simplificaciones se hicieron bien, no alteran el valor en estado
+estable — y el punto del ejercicio es visual: comparar cuánto se parecen
+las curvas *durante el transitorio* a medida que se van quitando el cero
+lejano y después el polo lejano.
 
 ---
 
