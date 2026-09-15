@@ -724,3 +724,61 @@ lenta tiene amplitud chica) — se arregló haciendo zoom vertical a
 rectángulo negro sólido — se arregló mostrando una ventana ampliada de 4 s.
 Conviene recordarlo: **si el fenómeno es de amplitud chica o de frecuencia
 alta, hay que hacer zoom o la figura no dice nada.**
+
+### Nueva carpeta: `practicas_matlab/` — original junto al equivalente
+
+Pedido del usuario: *"tenemos ya código en matlab, puedes también sacar
+el equivalente en Python y dejarlo junto al de matlab, el que está en
+Python déjalo quieto."* Es un pedido distinto del anterior: no se toca el
+Python ya narrado dentro de los capítulos 02, 05 y 08 — se crea una
+carpeta nueva con **el `.m`/`.slx` original copiado** y, al lado, un
+`.py` con la traducción directa (sin narrativa pedagógica, solo
+código-a-código).
+
+Copiados desde `~/Nextcloud/salvar/control_digital/` (raíz, mismo alcance
+que antes — `matlab varios/` sigue fuera): `clase1.m`, `clase2.m`,
+`clase3`, `clase3.m`, `clase4.slx`.
+
+**Hallazgo al decodificar `clase4.slx`.** La vez anterior solo se había
+leído la lista de tipos de bloque del XML (`BlockType=...`), sin sus
+parámetros ni las conexiones (`<Line>`/`<Branch>`). Esta vez se parseó el
+`simulink/blockdiagram.xml` completo (el `.slx` es un zip) y salieron tres
+cosas que cambian la lectura del modelo:
+
+1. La planta es explícita: `sys = tf(1,[1 1])`, o sea $1/(s+1)$ — no era
+   necesario suponerla.
+2. El segundo puerto del bloque `Sum` **no está cableado** (solo hay una
+   línea a `3#in:1`, ninguna a `3#in:2`, a pesar de que el bloque pide dos
+   entradas). El modelo tal como está guardado es **lazo abierto**: no hay
+   comparación con una referencia ni realimentación. El `ManualSwitch`
+   elige entre alimentar el `Relay` con el `Step` o con el `Random
+   Number`, no entre "referencia limpia" y "referencia con ruido" como se
+   había asumido.
+3. El `Relay` no tiene parámetros propios en el XML, así que usa los
+   valores por defecto de Simulink: umbral de encendido = umbral de
+   apagado = 1. Verificado en Python: con el `Step` por defecto
+   (`StepTime=1`, `Final=1`) la señal se queda parada **exactamente** en
+   el umbral, y el relé entra en *chattering* — conmuta en cada paso de
+   simulación porque nunca cruza el umbral, solo lo toca. Con la rama de
+   `Random Number` (Mean=0, Variance=1, Ts=0.1 s — este último sí explícito
+   en el XML) el relé conmuta con normalidad, 12 veces en 6 s.
+
+**Esto es más preciso que lo que sostiene la figura `clase4_onoff_ruido.svg`
+del capítulo 05** (un lazo cerrado con ruido aditivo en la medida y una
+histéresis $\pm\Delta$, hecho como ilustración general del concepto de
+on-off con ruido, antes de haber decodificado el `.slx` a este nivel de
+detalle). Seguí las instrucciones del usuario y **no toqué esa figura ni
+el capítulo** — el hallazgo queda documentado acá y en el `README.md` de
+`practicas_matlab/`, no reescrito en el libro. Si en algún momento se
+quiere corregir el capítulo 05 para reflejar la topología real, ya está
+todo el análisis hecho.
+
+Los `clase3` (sin extensión) y `clase3.m` dieron dos archivos Python
+separados, `clase3a.py` y `clase3b.py`, porque ambos comparten el nombre
+base "clase3" y no pueden convivir como un solo `.py`.
+
+Todo corrido y verificado antes de dejarlo: `clase1.py`/`clase2.py`
+reproducen exactamente los polos y ganancias ya verificados en el
+capítulo 02/05; `clase3a.py`/`clase3b.py` dan la misma antitransformada
+que `sympy` calculó antes; `clase4.py` se corrió y se graficó para
+confirmar visualmente el *chattering* y la conmutación normal con ruido.

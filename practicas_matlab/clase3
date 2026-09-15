@@ -1,0 +1,8 @@
+clc
+clear all;
+close all;
+syms s
+g=1/(s^2+4);
+x=1/s;
+y=g*x;
+yt=ilaplace(y)

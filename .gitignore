@@ -1,12 +1,13 @@
-# PDFs compilados -- se generan con apoyo/build.sh, la copia final versionada
-# vive en pdf/
-/build/
 
-# Figuras: se versiona el .svg (para leer el Markdown en GitHub), el .pdf
-# vectorial que usa XeLaTeX es un artefacto de compilacion regenerable con
 # apoyo/build.sh (o python3 sobre cada script en apoyo/figuras/).
-apoyo/figuras/*.pdf
-
 # Archivos temporales que arma build.sh mientras compila
+# Figuras: se versiona el .svg (para leer el Markdown en GitHub), el .pdf
+# PDFs compilados -- se generan con apoyo/build.sh, la copia final versionada
+# vectorial que usa XeLaTeX es un artefacto de compilacion regenerable con
+# vive en pdf/
+apoyo/figuras/*.pdf
 apuntes/.build-*.md
 apuntes/.libro-*.md
+/build/
+*.pyc
+__pycache__/
