@@ -406,6 +406,47 @@ No se tocó el resto de los capítulos ni el `.zip` de la raíz de
 `proyectos/` (es el resultado de la digitalización original, base de todo
 este trabajo — no es un archivo de esta carpeta para editar).
 
+## Capítulos 12-13: complementos a partir de una evaluación del curso (2026-09-15)
+
+Se le pidió a Claude una evaluación honesta del curso completo (qué le
+falta, qué falta profundizar, con foco en el repaso de control análogo) y
+después que la desarrollara — con **Python en vez de MATLAB** para todo
+lo nuevo (librería [`control`](https://pypi.org/project/control/),
+instalada en `~/.venvs/apuntes_control`).
+
+Dos capítulos nuevos, no ligados a ninguna página del cuaderno:
+
+- **`12-tecnicas-clasicas-de-diseno.md`** — lugar de las raíces (con
+  ejercicio de diseño: elegir $K$ para $\zeta$ objetivo), criterio de
+  Nyquist (verificado sobre el mismo sistema ilustrativo ya usado en
+  margen de ganancia/fase — coincide: también da inestable), y diseño de
+  compensador de adelanto paso a paso (de $MF=8.9°$ a $MF=41°$ sobre
+  $G(s)=20/[s(s+1)(s+5)]$).
+- **`13-complementos-digitales.md`** — PID discreto (ecuación en
+  diferencias, forma posicional e incremental, simulación completa del
+  lazo), control *dead-beat* (diseño completo sobre $G(z)=0.5/(z-0.5)$,
+  llega exacto a la referencia en 1 muestra), y las dos limitaciones
+  físicas del muestreo que Nyquist no cubre (antialiasing, cuantización
+  con la fórmula $\text{SNR}\approx 6.02n+1.76\,\text{dB}$).
+
+Nuevos scripts de figuras: `apoyo/figuras/diseno.py` (lugar de raíces,
+Nyquist, Bode antes/después del compensador) y
+`apoyo/figuras/digital_complementos.py` (PID discreto, dead-beat,
+cuantización) — ambos usan `control`, no solo `matplotlib`.
+
+Todos los ejemplos numéricos se verificaron corriendo el código antes de
+escribirlos en el texto (no se transcribieron cuentas a mano) — en
+particular el compensador de adelanto necesitó tres iteraciones para
+encontrar un $\phi_{max}$ de diseño que diera un resultado honesto (no se
+fuerza a que "cierre perfecto", se documenta que el margen real quedó por
+debajo del objetivo y por qué).
+
+**Pendiente para quien continúe**: el `README.md` y el índice de
+`pendiente.txt` no mencionaban estos capítulos — ya actualizado el primero
+(tabla de contenido + dependencia de `control`), pero si aparece feedback
+nuevo sobre 12-13 en un `pendiente.txt` futuro, tratarlos como cualquier
+otro capítulo.
+
 ## Pendientes
 
 - Transcribir las páginas siguientes (falta de la Unidad 1: retenedores de orden

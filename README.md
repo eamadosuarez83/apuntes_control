@@ -26,8 +26,14 @@ Dependencias:
 
 ```bash
 sudo apt install pandoc texlive-xetex lmodern graphviz
-pip install schemdraw matplotlib
+pip install schemdraw matplotlib control
 ```
+
+(`control` — python-control, el equivalente del Control System Toolbox de
+MATLAB — hace falta desde los capítulos 12 y 13. Si el sistema bloquea
+`pip install` directo por PEP 668, usar un venv:
+`python3 -m venv .venv && .venv/bin/pip install schemdraw matplotlib control`,
+y correr `build.sh`/los scripts de `apoyo/figuras/` con ese Python.)
 
 Nota: XeLaTeX no incrusta SVG, así que cada script de `apoyo/figuras/` genera
 las dos versiones — `.svg` para leer el Markdown en GitHub o en un visor, y
@@ -48,10 +54,16 @@ las dos versiones — `.svg` para leer el Markdown en GitHub o en un visor, y
 | `09-error-estacionario-y-estabilidad.md` | Error en estado estable, margen, Routh | 42–47 |
 | `10-pares-de-transformada-z.md` | Pares de transformada Z desde la serie | 48, 49 |
 | `11-discretizacion-con-distintos-T.md` | Mapeo s→z con varios periodos de muestreo | 50–55 |
+| `12-tecnicas-clasicas-de-diseno.md` | Lugar de las raíces, Nyquist, compensadores adelanto/atraso | — (complemento, no sale del cuaderno) |
+| `13-complementos-digitales.md` | PID discreto, *dead-beat*, antialiasing, cuantización | — (complemento, no sale del cuaderno) |
 
-**El escaneo sigue en curso**: faltan las páginas 58 en adelante. Dentro de lo
-ya transcrito siguen sin aparecer la transformación bilineal, los retenedores
-en detalle y el desarrollo del criterio de Routh.
+**El escaneo del cuaderno terminó** en la página 57 (páginas 1–57
+transcritas por completo). Los capítulos 12 y 13 son contenido
+complementario agregado a partir de una evaluación del curso — cubren
+temas del temario (transformación bilineal, retenedores, PID discreto,
+etc.) y de control clásico en general que no llegaron a aparecer en el
+cuaderno; ver `notas/NOTAS-DESARROLLO.md` para el detalle de qué se agregó
+y por qué.
 
 ## Criterio
 
