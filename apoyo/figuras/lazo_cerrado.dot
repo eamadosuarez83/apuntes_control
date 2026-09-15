@@ -1,0 +1,22 @@
+// Sistema de control de lazo cerrado (Unidad 1 - conceptos)
+digraph lazo_cerrado {
+  rankdir=LR;
+  splines=ortho;
+  bgcolor="transparent";
+  node [fontname="Helvetica", fontsize=12];
+  edge [fontname="Helvetica", fontsize=11, arrowsize=0.7];
+
+  x     [shape=plaintext, label="x"];
+  suma  [shape=circle, label="", width=0.28, fixedsize=true, penwidth=1.2];
+  C     [shape=box, label="C", width=0.9, height=0.6, fixedsize=true];
+  G     [shape=box, label="G", width=0.9, height=0.6, fixedsize=true];
+  nodo  [shape=point, width=0.02];
+  y     [shape=plaintext, label="y"];
+
+  x -> suma;
+  suma -> C [xlabel="e"];
+  C -> G;
+  G -> nodo [arrowhead=none];
+  nodo -> y;
+  nodo -> suma [constraint=false, xlabel="−"];
+}

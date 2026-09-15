@@ -1,0 +1,22 @@
+// Lazo cerrado con realimentacion H (G y H de ganancia constante)
+digraph lazo_H {
+  rankdir=LR;
+  splines=ortho;
+  bgcolor="transparent";
+  node [fontname="Helvetica", fontsize=12];
+  edge [fontname="Helvetica", fontsize=11, arrowsize=0.7];
+
+  r     [shape=plaintext, label="r"];
+  suma  [shape=circle, label="", width=0.28, fixedsize=true, penwidth=1.2];
+  G     [shape=box, label="G", width=0.9, height=0.6, fixedsize=true];
+  nodo  [shape=point, width=0.02];
+  y     [shape=plaintext, label="y"];
+  H     [shape=box, label="H", width=0.9, height=0.6, fixedsize=true];
+
+  r -> suma;
+  suma -> G [xlabel="e"];
+  G -> nodo [arrowhead=none];
+  nodo -> y;
+  nodo -> H [constraint=false];
+  H -> suma [constraint=false, xlabel="b"];
+}
