@@ -782,3 +782,68 @@ reproducen exactamente los polos y ganancias ya verificados en el
 capítulo 02/05; `clase3a.py`/`clase3b.py` dan la misma antitransformada
 que `sympy` calculó antes; `clase4.py` se corrió y se graficó para
 confirmar visualmente el *chattering* y la conmutación normal con ruido.
+
+### Corrección: el código MATLAB vuelve al libro, junto al Python
+
+El usuario aclaró el pedido anterior: no era "practicas_matlab/ aparte y
+el libro sin tocar" — era que el libro **también** lleve el código MATLAB
+original, con el Python equivalente **inmediatamente después**, para cada
+script. Cita textual: *"la idea es que dejaras en el libro el código
+matlab y para cada código deja también y en seguida el código equivalente
+en Python. creo que ya lo sacaste así que añadelo al libro."*
+
+Cambios en `apuntes/02-laplace-y-respuesta-temporal.md`:
+- La sección de `clase3`/`clase3.m` tenía un bloque MATLAB combinado
+  (fusionando artificialmente las dos g= en un solo snippet) seguido de
+  un solo loop de Python sobre las dos. Se separó en **dos pares
+  completos**: `clase3` original + su Python, `clase3.m` original + su
+  Python — cada uno el archivo real, no una fusión.
+- `clase1.m` ya tenía el par MATLAB→Python correcto desde la vez
+  anterior; no se tocó.
+
+Cambios en `apuntes/05-pid-y-control-on-off.md`:
+- `clase2.m` ya tenía el par correcto; no se tocó.
+- La sección de `clase4.slx` se reescribió. Antes solo describía los
+  tipos de bloque y mostraba una función Python genérica de ilustración
+  (un lazo cerrado con histéresis y ruido aditivo). Ahora empieza con la
+  reconstrucción fiel: un bloque "matlab" con la topología y los
+  parámetros reales decodificados del XML del `.slx` (ver la sesión
+  anterior — planta $1/(s+1)$, Sum con un puerto sin cablear = lazo
+  abierto, Relay con umbrales por defecto), seguido del Python
+  equivalente real. La función genérica de lazo cerrado con ruido se
+  mantiene **después**, en una subsección nueva ("La histéresis contra
+  el ruido, en un lazo cerrado") presentada explícitamente como una
+  generalización del concepto y no como reconstrucción del `.slx`.
+
+**Bug encontrado al verificar el fragmento abreviado.** Al reescribir la
+función `simular()` para el capítulo (más corta que la de
+`practicas_matlab/clase4.py`), quedó escrita con dos `if` seguidos en vez
+de `if/elif`:
+
+```python
+if estado == 0 and uk >= ON:  estado = 1
+if estado == 1 and uk <= OFF: estado = 0     # <- BUG: debía ser elif
+```
+
+Con `ON == OFF == 1`, cuando `uk` llega a 1 el primer `if` prende el
+relay y en la misma iteración el segundo `if` (evaluado con el estado ya
+actualizado) lo vuelve a apagar — el relay nunca queda encendido, v se
+queda en 0 para siempre. Es exactamente lo opuesto del *chattering* que
+el texto afirmaba. Se detectó corriendo el bloque **tal cual iba a quedar
+publicado** (no la versión de `practicas_matlab/clase4.py`, que sí tenía
+`elif` y por eso no mostró el problema antes). Corregido a `if/elif` y
+reverificado: 4999 conmutaciones con el escalón (chattering confirmado),
+12 con la rama de ruido — igual que `practicas_matlab/clase4.py`.
+
+**Lección para el proceso**: verificar el código completo de
+`practicas_matlab/` no alcanza si después se **reescribe una versión
+abreviada** para el capítulo — hay que correr el fragmento exacto que
+queda en el `.md`, porque el resumen puede introducir un error que la
+versión original no tenía.
+
+`practicas_matlab/README.md` se actualizó para reflejar que el código
+MATLAB ya está en el libro (ya no dice "el libro no lleva MATLAB"): la
+carpeta es ahora la versión "solo código" de los mismos pares que
+aparecen narrados en los capítulos.
+
+Recompilado: `libro-completo.pdf` pasó de 101 a **103 páginas**.

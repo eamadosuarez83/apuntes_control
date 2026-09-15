@@ -279,16 +279,103 @@ oscila prácticamente para siempre.** Es el recordatorio de que el criterio
 de Routh contesta una pregunta de sí o no, no una de calidad: hace falta
 mirar dónde quedan los polos, no solo de qué lado del eje.
 
-### `clase4.slx`: el ruido y para qué sirve realmente la histéresis
+### `clase4.slx`: el modelo de Simulink, decodificado
 
-El modelo de Simulink tiene un bloque `Relay` (que es un on-off con
-histéresis), un `Step` como referencia, un `Random Number` sumado a la
-medida y un `Manual Switch` para conectar o desconectar ese ruido. O sea:
-el experimento era **ver qué le hace el ruido a un control on-off**.
+`clase4.slx` no tiene código de texto — es un diagrama de bloques, y el
+archivo en sí es un `.zip` binario. Para poder ponerlo "junto a su
+Python" hay que extraer primero qué hace, bloque por bloque, leyendo el
+XML que Simulink guarda adentro (`simulink/blockdiagram.xml`): tipo de
+cada bloque, sus parámetros, y las líneas que los conectan.
 
-La sección anterior presentó la histéresis como una forma de que $u(t)$ no
-conmute todo el tiempo. Con ruido en la medida el argumento se vuelve
-mucho más fuerte, y es fácil de ver simulando:
+```matlab
+% clase4.slx -- reconstruido leyendo simulink/blockdiagram.xml
+%
+%   Step(4) ----------+--(ManualSwitch:7, in:1)--+
+%                      |                          |
+%   RandomNumber(5) ---+--(ManualSwitch:7, in:2)--+
+%                                  |
+%                                  v
+%                         Relay(6) --> LTI System(9): sys = tf(1,[1 1])
+%                                  |          (es decir, G(s) = 1/(s+1))
+%   Mux(8): in:1 = señal antes del Relay
+%           in:2 = salida de la planta        --> Scope(2)
+%
+% Parametros que SI estan explicitos en el .slx:
+%   Planta:        G(s) = 1/(s+1)
+%   RandomNumber:  SampleTime = 0.1 s   (Mean=0, Variance=1 son los
+%                  valores por defecto de Simulink, no estan
+%                  sobreescritos)
+%   Step:          SampleTime = 0       (StepTime=1, Initial=0, Final=1
+%                  son los valores por defecto)
+%   Relay:         sin parametros propios -> valores por defecto:
+%                  Switch on point = Switch off point = 1
+%                  Output when on = 1, Output when off = 0
+```
+
+Y algo que no se ve mirando solo los *tipos* de bloque: el segundo puerto
+del `Sum` **no está cableado** (solo hay una línea a su entrada 1, aunque
+el bloque pide dos). El modelo, tal como quedó guardado, es de **lazo
+abierto** — no compara la salida contra una referencia. El `Manual
+Switch` no alterna "medida limpia / con ruido" sobre una realimentación,
+que es lo que parecía a simple vista: alterna qué señal entra al
+`Relay`, el `Step` o el `Random Number`.
+
+Traducido a Python:
+
+```python
+import numpy as np
+
+TAU, K = 1.0, 1.0             # G(s) = 1/(s+1)
+ON = OFF = 1.0                # umbrales por defecto del Relay
+OUT_ON, OUT_OFF = 1.0, 0.0
+
+def simular(entrada, T=6.0, dt=0.001):
+    N = int(T/dt); t = np.arange(N)*dt
+    a = np.exp(-dt/TAU); b = K*(1 - a)
+    u = np.array([entrada(tk) for tk in t])
+    v = np.zeros(N); y = np.zeros(N); estado = 0
+    for k in range(1, N):
+        uk = u[k-1]
+        if   estado == 0 and uk >= ON:  estado = 1
+        elif estado == 1 and uk <= OFF: estado = 0
+        v[k-1] = OUT_ON if estado else OUT_OFF
+        y[k] = a*y[k-1] + b*v[k-1]
+    return t, u, v, y
+
+def entrada_step(t):
+    return 1.0 if t >= 1.0 else 0.0            # Step por defecto
+
+def entrada_random(seed=0, Ts=0.1):
+    rng = np.random.default_rng(seed); cache = {}
+    def u(t):
+        k = int(t/Ts)
+        if k not in cache: cache[k] = rng.normal(0, 1)
+        return cache[k]
+    return u
+```
+
+**Lo que sale al correrlo es el hallazgo del script.** Con el `Manual
+Switch` en su posición guardada (`Step`, por defecto) el escalón sube a 1
+y se queda ahí —**exactamente en el umbral del `Relay`**— y el relé entra
+en *chattering*: conmuta en cada paso de la simulación, porque nunca
+cruza el umbral, solo lo toca. Con la otra posición del switch
+(`Random Number`, media 0 y varianza 1) el relé conmuta con normalidad:
+12 veces en 6 s, verificado corriendo `simular(entrada_random())`.
+
+Es probable que fuera justo lo que se mostraba en vivo: mover el switch
+de una posición a otra y ver al relé pasar de "atascado" a "funcionando
+normal", como demostración de que una entrada parada exactamente en el
+umbral es un caso degenerado. (El detalle completo, con las figuras de
+las dos ramas, está en `practicas_matlab/clase4.py`.)
+
+### La histéresis contra el ruido, en un lazo cerrado
+
+El modelo real de `clase4.slx` resultó ser de lazo abierto, sin
+referencia — así que no sirve, tal cual, para mostrar el argumento más
+importante de la histéresis: qué pasa cuando la *medida* tiene ruido y el
+lazo **sí** está cerrado contra una referencia. Eso es lo que se simula
+acá, generalizando el mismo `Relay` con umbral único que trae el
+`.slx` a un lazo con banda $\pm\Delta$:
 
 ```python
 def on_off(delta, sigma):

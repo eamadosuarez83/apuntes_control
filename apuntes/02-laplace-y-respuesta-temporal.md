@@ -507,31 +507,64 @@ marginal de los polos sobre el eje imaginario.
 verifican contra lo que el cuaderno resolvió a mano, y se saca de ellos
 una conclusión que en su momento quedó implícita.*
 
-### `clase3.m` y `clase3`: la comprobación de los dos ejercicios de arriba
+### `clase3` y `clase3.m`: la comprobación de los dos ejercicios de arriba
 
-Los dos scripts son casi idénticos y difieren en **un solo signo**:
+Son el mismo ejercicio con **un solo signo** de diferencia. Primero
+`clase3` (sin extensión, el archivo tal cual está en la carpeta de la
+materia):
 
 ```matlab
+clc
+clear all;
+close all;
 syms s
-g = 1/(s^2 + 4);        % clase3   (sin extensión)
-g = 1/(s^2 - s + 4);    % clase3.m
-x = 1/s;
-yt = ilaplace(g*x)
+g=1/(s^2+4);
+x=1/s;
+y=g*x;
+yt=ilaplace(y)
 ```
 
-Son exactamente los dos ejercicios que el cuaderno resolvió a mano por
-fracciones parciales: el script era la verificación en MATLAB. El
-equivalente en Python usa `sympy`:
+Equivalente en Python, con `sympy`:
 
 ```python
 import sympy as sp
-s, t = sp.Symbol('s'), sp.Symbol('t', positive=True)
 
-for g in (1/(s**2 + 4), 1/(s**2 - s + 4)):
-    print(sp.simplify(sp.inverse_laplace_transform(g/s, s, t)))
+s, t = sp.symbols('s t', positive=True)
+g = 1/(s**2 + 4)
+x = 1/s
+y = g*x
+yt = sp.simplify(sp.inverse_laplace_transform(y, s, t))
+print(yt)          # sin(t)**2/2
 ```
 
-y devuelve
+Y `clase3.m`, que es el mismo script y solo cambia el signo del término
+lineal del denominador:
+
+```matlab
+clc
+clear all;
+close all;
+syms s
+g=1/(s^2-s+4);
+x=1/s;
+y=g*x;
+yt=ilaplace(y)
+```
+
+```python
+import sympy as sp
+
+s, t = sp.symbols('s t', positive=True)
+g = 1/(s**2 - s + 4)
+x = 1/s
+y = g*x
+yt = sp.simplify(sp.inverse_laplace_transform(y, s, t))
+print(yt)
+```
+
+Son exactamente los dos ejercicios que el cuaderno resolvió a mano por
+fracciones parciales: los scripts eran la verificación en MATLAB. Los dos
+resultados de Python (y de MATLAB) coinciden:
 
 $$
 \mathcal{L}^{-1}\left\{\frac{1}{s(s^2+4)}\right\}

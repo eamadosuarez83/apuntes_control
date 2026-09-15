@@ -5,11 +5,13 @@ se usó en clase en 2018. Cada `.m`/`.slx` original queda junto a su
 traducción a Python (mismo nombre base, extensión `.py`), para poder
 comparar línea a línea.
 
-Esto es distinto de los capítulos de `apuntes/`: allá el código Python ya
-está narrado dentro de la explicación del tema (con la crítica de qué
-está bien, qué está mal y por qué) y **no se toca**. Acá es la traducción
-directa del script tal como está, sin comentario pedagógico — una
-referencia de "esto en MATLAB es esto mismo en Python".
+El código MATLAB **también está en los capítulos de `apuntes/`** — ahí
+cada script aparece con su bloque `matlab` seguido inmediatamente del
+`python` equivalente, dentro de la explicación del tema (con la crítica
+de qué está bien, qué está mal y por qué). Esta carpeta es la versión
+"solo código": los mismos pares MATLAB→Python, sin la narrativa
+alrededor, para poder correrlos o compararlos directamente archivo por
+archivo. El contenido narrado de los capítulos no se toca desde acá.
 
 | Original | Python | Qué hace | Aparece también en |
 |---|---|---|---|
@@ -17,7 +19,7 @@ referencia de "esto en MATLAB es esto mismo en Python".
 | `clase2.m` | `clase2.py` | PID $K=386$, $T_i=900$, $T_d=1000$ sobre una planta de 3er orden | cap. 05 |
 | `clase3` (sin extensión) | `clase3a.py` | `ilaplace` de $1/[s(s^2+4)]$ | cap. 02 |
 | `clase3.m` | `clase3b.py` | `ilaplace` de $1/[s(s^2-s+4)]$ | cap. 02 |
-| `clase4.slx` | `clase4.py` | Simulink: Step/Random + Relay + planta $1/(s+1)$ | cap. 05 (figura ilustrativa, no esta reconstrucción exacta) |
+| `clase4.slx` | `clase4.py` | Simulink decodificado: Step/Random + Relay + planta $1/(s+1)$ | cap. 05 |
 
 ## Sobre `clase4.slx`
 
@@ -38,11 +40,14 @@ era evidente solo mirando los tipos de bloque:
   lo toca. Con la rama de ruido (`Random Number`) sí conmuta con
   normalidad. Ver el docstring de `clase4.py` para el detalle completo.
 
-Este hallazgo es más preciso que el que se usó para la figura del
-capítulo 05 (`clase4_onoff_ruido.svg`, un lazo cerrado con ruido en la
-medida e histéresis, hecho como ilustración general del concepto antes de
-poder leer el `.slx` en detalle). Esa figura y su texto se dejan como
-están — la corrección queda documentada acá y en `notas/NOTAS-DESARROLLO.md`.
+Este hallazgo es más preciso que el que se usó originalmente para la
+figura del capítulo 05 (`clase4_onoff_ruido.svg`, un lazo cerrado con
+ruido en la medida e histéresis, hecho como ilustración general del
+concepto antes de poder leer el `.slx` en detalle). El capítulo 05 ya
+tiene ambas cosas: la reconstrucción fiel del `.slx` (bloques,
+parámetros, la conclusión del *chattering*) en una sección, y esa figura
+ilustrativa a continuación, presentada explícitamente como una
+generalización a lazo cerrado — no como si fuera el mismo modelo.
 
 ## Requisitos
 
