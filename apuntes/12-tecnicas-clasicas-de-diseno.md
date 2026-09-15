@@ -47,7 +47,7 @@ G(s) = \frac{1}{s(s+4)}
 $$
 
 Objetivo: elegir $K$ tal que el lazo cerrado tenga $\zeta=0.5$ (típico,
-~16 % de sobrepaso).
+un 16 % de sobrepaso).
 
 Lazo cerrado: $T(s) = \dfrac{K}{s^2+4s+K}$. Comparando con la forma
 estándar $s^2+2\zeta\omega_n s + \omega_n^2$:

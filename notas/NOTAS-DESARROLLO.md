@@ -544,3 +544,100 @@ banda del 2 % antes de lo que predice la fórmula asintótica.
 - Decidir si al final se arma un PDF único con todos los lotes o uno por archivo.
   *(Resuelto: se arma `libro-completo.pdf` con `apoyo/build.sh libro`, y se
   mantienen también los PDFs individuales por clase en `pdf/`.)*
+
+- **Prácticas de MATLAB de la clase** (pendiente, sesión futura). Los `.m`
+  aparecieron en Nextcloud el 15-09-2026, en
+  `~/Nextcloud/salvar/control_digital/` (no en una carpeta "sistemas de
+  control" — de ahí que la primera búsqueda no diera nada). Contenido
+  inventariado más abajo. Plan:
+  1. leer qué hace cada `.m` y asignarlo a un capítulo según la tabla de
+     abajo;
+  2. escribir el equivalente en Python con `control`;
+  3. **correrlo y comparar** contra el resultado esperado del `.m`;
+  4. insertarlo como sección de práctica del capítulo.
+
+  **Decisión del autor: en los apuntes va solo la traducción a Python**,
+  no el código MATLAB original a dos columnas. El repo es material de
+  aprendizaje con herramientas libres, y duplicar cada ejemplo en dos
+  lenguajes duplica también la superficie de errores y el mantenimiento.
+  Los `.m` originales, si se quieren conservar, van fuera de `apuntes/`.
+
+  | Lo que hace el `.m` | Capítulo destino |
+  |---|---|
+  | `tf`, `zpk`, `pzmap`, `step`, `impulse` continuos | 02 |
+  | `bode`, `margin` sobre planta continua | 03 |
+  | `c2d`, `d2c`, `zgrid`, mapeo s→z | 04 y 11 |
+  | PID, Ziegler-Nichols, on-off | 05 |
+  | polo dominante, $t_s$/$t_p$/$M_p$ en z | 06 |
+  | ajuste de respuesta al escalón, reducción de orden | 07 |
+  | práctica del motor, divisor de tensión | 08 |
+  | `dcgain`, error estacionario, Routh, Jury | 09 |
+  | `rlocus`, `nyquist`, `sisotool`, adelanto/atraso | 12 |
+  | PID en diferencias, dead-beat, cuantización | 13 |
+  | modelado de motor/tanque/horno, linealización | 14 |
+  | lectura de ADC/encoder, filtrado, PWM | 15 |
+  | simulación de lazo completo con saturación | 16 |
+
+### Procesado: el informe del motor (capítulo 08)
+
+De la carpeta `control_digital/` se procesó primero `informe_control/`, el
+informe IEEE *"Identificación y discretización de modelo de un motor DC"*
+(E. Amado Suárez, W. Serrano, M. Gómez — UTS Bucaramanga, oct-2018), que
+resultó ser la versión desarrollada de la práctica ya transcrita en el
+capítulo 08. Por eso se agregó ahí y no como capítulo nuevo: el cuaderno
+tenía el divisor de tensión sin explicar para qué, y el informe lo cierra.
+
+**Decisión de alcance**: la subcarpeta `matlab varios/` quedó **fuera** —
+son `.m` de otras materias (robótica 3DOF, convolución de imágenes en
+Octave, GUIs, rectificador con tiristores). Solo se toma lo que está en la
+raíz de `control_digital/`. El único borderline es `filtro.m`
+(`c2d(10(s+2)/s, 0.004, 'tustin')`), que sí es control y podría ir al
+capítulo 11 o 13 si en algún momento se quiere.
+
+**Lo verificado corriendo el código** (ninguna cuenta se copió del
+informe sin comprobarla):
+
+| Cantidad | Informe | Verificado | Estado |
+|---|---|---|---|
+| Ganancia de DC | 3345.89 | 3345.89 | coincide |
+| Polos en $z$ ($T=1$ s) | $z^2-1.671458z+0.77383$ | $z^2-1.671456z+0.773832$ | coincide |
+| Cero en $z$ | 0.9043 | 0.904295 | coincide |
+| Ganancia $k_d$ | **1797.06** | **1789.56** | **error del 0.42 % en el informe** |
+
+El $k_d$ se recalculó de dos maneras (con los polos exactos y con los
+valores redondeados que el propio informe imprime) y las dos dan 1789.5,
+así que el error es del informe, no del redondeo. Se documentó como
+corrección explícita en el capítulo, junto con otras dos: el pie de figura
+dice "respuesta al impulso" cuando la gráfica es al escalón, y las RPM
+están fuera de escala (70 000 RPM medidos, ~29 000 implícitos en la
+ganancia — casi seguro que falta dividir por el número de ranuras del
+disco del sensor óptico).
+
+**El hallazgo pedagógico**: el modelo tiene $\zeta=0.3745$, que por la
+fórmula del capítulo 6 predice 28 % de sobrepaso, pero la respuesta real
+sobrepasa **174 %**. La causa es el cero en $s=-0.1006$, que está a
+$0.29\,\omega_n$ — más cerca del origen que los polos. Quitando el cero y
+manteniendo la ganancia de DC, el sobrepaso vuelve a 28 % exacto. Quedó
+como advertencia de que $M_p(\zeta)$ solo vale para segundo orden sin
+ceros.
+
+**Diferencia entre herramientas que vale la pena recordar**: en la
+correspondencia de polos y ceros, el `c2d(...,'matched')` de MATLAB agrega
+$(z+1)^{n-m}$ y `ct.sample_system(...,method='matched')` de
+`python-control` agrega $(z+1)^{n-m-1}$. Misma ganancia de DC, polos
+idénticos, numeradores distintos: MATLAB deja grado relativo 0 y Python
+grado relativo 1. Ninguna es incorrecta, pero al traducir un `.m` hay que
+saberlo o los números no cuadran.
+
+Figuras nuevas en `apoyo/figuras/informe_motor.py`:
+`informe_motor_respuesta` (escalón continuo vs discreto, reproduce la
+figura del informe) e `informe_motor_mapeo` (los polos y el cero llevados
+de $s$ a $z$).
+
+**Tropezón de compilación, por tercera vez**: `\,\%` dentro de modo
+matemático rompe XeLaTeX con babel español ("Incompatible glue units"),
+porque babel ya espacia el `%`. Se corrigió con
+`sed -i 's/\\,\\%/\\%/g' apuntes/*.md`. **Conviene no volver a escribir
+`\,\%` nunca**. En la misma pasada se cambiaron los `~` sueltos delante de
+un número (`~8.8 V`) por "unos 8.8 V", porque en LaTeX el `~` es un
+espacio duro y no se ve.

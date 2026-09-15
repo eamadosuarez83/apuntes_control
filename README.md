@@ -50,7 +50,7 @@ las dos versiones — `.svg` para leer el Markdown en GitHub o en un visor, y
 | `05-pid-y-control-on-off.md` | Lazo cerrado, PID, on-off con histéresis | 21, 22 |
 | `06-respuesta-transitoria-en-z.md` | Polo dominante, tiempos característicos | 31, 32, 35, 36 |
 | `07-simplificacion-e-identificacion.md` | Simplificar modelos, identificación | 37–41, 56, 57 |
-| `08-practica-motor.md` | Práctica del motor, divisor de tensión | 33, 34 |
+| `08-practica-motor.md` | Práctica del motor, divisor de tensión, identificación y discretización (informe de laboratorio) | 33, 34 |
 | `09-error-estacionario-y-estabilidad.md` | Error en estado estable, margen, Routh | 42–47 |
 | `10-pares-de-transformada-z.md` | Pares de transformada Z desde la serie | 48, 49 |
 | `11-discretizacion-con-distintos-T.md` | Mapeo s→z con varios periodos de muestreo | 50–55 |
