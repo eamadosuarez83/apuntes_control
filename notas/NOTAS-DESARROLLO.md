@@ -371,6 +371,41 @@ extendió para marcar **ambos** márgenes sobre el mismo diagrama de Bode
 — se reutiliza una sola figura entre las dos secciones en vez de duplicar
 el gráfico.
 
+## Correcciones pedidas en `pendiente.txt` (2026-09-15)
+
+El usuario dejó un archivo `pendiente.txt` en la raíz del proyecto con
+feedback puntual de lectura. Se resolvió todo lo pedido ahí:
+
+1. **Capítulo 1 muy resumido** — se agregaron definiciones (sistema,
+   referencia, error, perturbación, sensor/transductor, actuador) y se
+   profundizaron las que ya estaban, cada una con ejemplo concreto. Se
+   agregó también un ejemplo de modelo matemático (masa-amortiguador) que
+   ahora se reutiliza como hilo conductor en el capítulo 2.
+2. **Capítulo 2, definir polo/cero con ejemplos y mostrar ecuaciones
+   diferenciales** — se agregó una sección "Por qué hace falta esto" que
+   parte de la ecuación diferencial del capítulo 1 y llega a la función de
+   transferencia, y se amplió "Polos y ceros" con la interpretación física
+   (frecuencias naturales / peso de cada modo) y dos ejemplos.
+3. **Figura 1.2 (línea que llega a H por arriba)** — corregido en
+   `bloques_schemdraw.py`: las dos funciones con bloque de realimentación
+   (`lazo_realimentado`, `lazo_laplace`) ahora bajan en el aire y entran
+   horizontal al bloque (H o A), no verticalmente. Aplicado también a
+   `lazo_laplace_sd` (bloque `A(s)`), que tenía el mismo problema aunque no
+   se mencionó explícitamente.
+4. **Explicar mejor la tabla de estabilidad de 2.1.2** — agregada la
+   deducción completa desde $e^{s_i t}=e^{\sigma t}(\cos\omega t + j\,\mathrm{sen}\,\omega t)$,
+   mostrando por qué la parte real es la que decide estable/inestable/marginal,
+   y por qué un polo o cero en el origen equivale a integrar/derivar.
+5. **Desarrollar el ejemplo de MATLAB de 2.1.4** — se explica qué hace
+   `feedback` (automatiza el $F=G/(1+GH)$ del capítulo 1), por qué existe
+   (evitar álgebra de polinomios a mano), y se agregó un ejemplo numérico
+   completo armando el lazo, chequeando estabilidad con `roots()` y
+   graficando con `step()`.
+
+No se tocó el resto de los capítulos ni el `.zip` de la raíz de
+`proyectos/` (es el resultado de la digitalización original, base de todo
+este trabajo — no es un archivo de esta carpeta para editar).
+
 ## Pendientes
 
 - Transcribir las páginas siguientes (falta de la Unidad 1: retenedores de orden

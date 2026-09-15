@@ -10,6 +10,38 @@ $$
 
 Válida para sistemas **LTI** (lineales e invariantes en el tiempo).
 
+### Por qué hace falta esto: de la ecuación diferencial a la función de transferencia
+
+*Sección agregada a pedido explícito (`pendiente.txt`) — el cuaderno entra
+directo a la definición de Laplace sin mostrar de dónde sale la necesidad.*
+
+El capítulo 1 dejó planteado el modelo del sistema masa-amortiguador:
+
+$$
+m\,\frac{dv(t)}{dt} + b\,v(t) = f(t)
+$$
+
+Resolver esta ecuación diferencial a mano (para cada $f(t)$ distinta) es
+tedioso. La gracia de Laplace es que convierte **derivadas en
+multiplicaciones por $s$** — con condiciones iniciales nulas,
+$\mathcal{L}\{dv/dt\} = s\,V(s)$. Aplicando Laplace a toda la ecuación:
+
+$$
+m\,s\,V(s) + b\,V(s) = F(s)
+\qquad\Longrightarrow\qquad
+V(s)\,(ms+b) = F(s)
+$$
+
+$$
+\boxed{\;G(s) = \frac{V(s)}{F(s)} = \frac{1}{ms+b}\;}
+$$
+
+La ecuación diferencial se convirtió en **álgebra**: dividir por $(ms+b)$
+en vez de integrar. Esta $G(s)$ es la **función de transferencia** del
+sistema — la relación entre la entrada (fuerza) y la salida (velocidad) en
+el dominio de Laplace, sin necesidad de resolver la ecuación diferencial
+cada vez que cambia la entrada $f(t)$.
+
 ### Polos y ceros
 
 $$
@@ -18,6 +50,29 @@ $$
 
 - $\mathrm{Num}(s) = 0$ → **ceros**
 - $\mathrm{Den}(s) = 0$ → **polos**
+
+**Qué significan.** Un polo es un valor de $s$ donde $G(s)\to\infty$ — el
+denominador se anula. Un cero es un valor de $s$ donde $G(s)\to 0$ — el
+numerador se anula. No son solo álgebra: los polos son las
+**frecuencias naturales** del sistema — determinan la forma de la
+respuesta libre (sin entrada), independientemente de qué se le aplique a
+la entrada. Los ceros no generan modos propios, pero sí modifican **cuánto
+pesa** cada modo en la respuesta total (la amplitud y el signo con que
+aparece cada término).
+
+**Ejemplo — el sistema masa-amortiguador de arriba.** $G(s)=1/(ms+b)$ tiene
+un único polo en $s=-b/m$ (donde $ms+b=0$) y ningún cero finito. Ese polo
+es, literalmente, la constante de tiempo del sistema: la respuesta libre
+decae como $e^{-(b/m)t}$ — cuanto más grande $b/m$ (más roce, menos masa),
+más rápido decae, más "adentro" del semiplano izquierdo cae el polo.
+
+**Ejemplo con cero** — $G(s) = \dfrac{s+3}{(s+1)(s+2)}$ tiene polos en
+$s=-1$ y $s=-2$ (dos modos naturales, $e^{-t}$ y $e^{-2t}$) y un cero en
+$s=-3$. El cero no agrega un tercer modo — la respuesta natural sigue
+siendo combinación solo de $e^{-t}$ y $e^{-2t}$ — pero cambia el peso
+relativo de cada uno en la fracción parcial (comparar esta $G(s)$ con la
+misma sin el $(s+3)$ en el numerador: los coeficientes $A$, $B$ de la
+descomposición en fracciones parciales salen distintos).
 
 ### Estabilidad según la ubicación de los polos
 
@@ -35,6 +90,39 @@ $$
 s = \sigma + j\omega
 $$
 
+**Por qué la tabla es así — el porqué que el cuaderno no desarrolla.** Cada
+polo $s_i$ contribuye a la respuesta libre un término de la forma
+$e^{s_i t}$. Escribiendo $s_i = \sigma + j\omega$:
+
+$$
+e^{s_i t} = e^{(\sigma+j\omega)t} = e^{\sigma t}\cdot e^{j\omega t}
+= \underbrace{e^{\sigma t}}_{\text{envolvente}}\cdot
+\underbrace{\left(\cos\omega t + j\operatorname{sen}\omega t\right)}_{\text{oscilación, magnitud 1}}
+$$
+
+La parte oscilante **nunca crece ni decae** (su magnitud es siempre 1) —
+toda la información de si el término crece o decae vive en $e^{\sigma t}$,
+es decir, en la **parte real** del polo. De ahí sale cada fila de la
+tabla:
+
+- $\sigma = \operatorname{Re}\{s\} < 0$: $e^{\sigma t}\to 0$ — el término se
+  apaga solo, el sistema es **estable**.
+- $\sigma > 0$: $e^{\sigma t}\to\infty$ — el término crece sin límite,
+  **inestable**.
+- $\sigma = 0$ (polo en $\pm j\alpha$, puramente imaginario): la envolvente
+  es constante ($e^0=1$) — ni crece ni decae, queda oscilando para
+  siempre con amplitud fija. Es el caso límite, **marginalmente estable**
+  (técnicamente inestable para fines de diseño: cualquier perturbación
+  chiquita puede sacarlo de ahí, y en la práctica ni siquiera se sostiene
+  perfecto).
+- Polo en $s=0$: $e^{0\cdot t}=1$, un escalón — pero más importante,
+  $1/s$ es exactamente la transformada de Laplace del **integrador**
+  ($\int_0^t x(\tau)\,d\tau \;\leftrightarrow\; X(s)/s$). Un polo en el
+  origen se comporta como un bloque integrador en cascada.
+- Cero en $s=0$: por la misma lógica pero al revés — $s$ es el operador de
+  **derivar** en Laplace ($dx/dt \leftrightarrow s\,X(s)$, con condición
+  inicial nula). Un cero en el origen actúa como un derivador en cascada.
+
 ### Forma general y polinomio característico
 
 $$
@@ -46,9 +134,55 @@ El denominador es el **polinomio característico**.
 
 ### En Matlab
 
-$$
-\texttt{[num, den] = feedback(num1, den1, \ldots)}
-$$
+*Sección desarrollada a pedido explícito (`pendiente.txt`) — el cuaderno
+solo anota la línea de código sin decir para qué sirve ni mostrar un uso
+real.*
+
+`feedback` calcula automáticamente la función de transferencia de lazo
+cerrado — hace, en una línea, exactamente la cuenta $F=G/(1+GH)$ que se
+dedujo a mano en el capítulo anterior:
+
+```matlab
+[num, den] = feedback(num1, den1, num2, den2)
+% num1/den1 = G(s)  (trayectoria directa)
+% num2/den2 = H(s)  (realimentación; se omite si es realimentación unitaria, H=1)
+% devuelve num/den = G/(1+G*H)
+```
+
+**Por qué está ahí**: a mano, multiplicar y sumar polinomios para armar
+$1+G\,H$ y simplificar es tedioso y fácil de arruinar con un error de
+álgebra — sobre todo con plantas de orden alto. `feedback` hace ese álgebra
+sin errores, para poder concentrarse en el diseño (elegir $G$, $H$) en vez
+de en la manipulación simbólica.
+
+**Ejemplo real — armar el lazo y determinar si es estable:**
+
+```matlab
+% Planta: G(s) = 5/(s+2)
+numG = 5;
+denG = [1 2];
+
+% Realimentacion unitaria: H(s) = 1
+[numF, denF] = feedback(numG, denG, 1, 1);
+% numF/denF = 5/(s+7)
+
+% Determinar estabilidad: mirar donde caen los polos
+p = roots(denF)
+% p = -7  -> parte real negativa, sistema ESTABLE
+
+% Verlo, no solo calcularlo: respuesta al escalon
+sys = tf(numF, denF);
+step(sys)
+```
+
+Con el modelo masa-amortiguador de este mismo capítulo ($G(s)=1/(ms+b)$),
+el mismo patrón sirve para **diseñar**: si se le agrega una ganancia
+proporcional $K$ delante de la planta ($G_c = K$, ver capítulo de PID) y
+se pregunta qué tan grande puede ser $K$ antes de perder estabilidad, se
+barre un rango de valores de $K$, se arma el lazo con `feedback` para cada
+uno, y se mira `roots(denF)` — exactamente el tipo de barrido que hace
+`rlocus` (lugar de las raíces) de forma continua en vez de punto por
+punto.
 
 ---
 

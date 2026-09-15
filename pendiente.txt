@@ -1,0 +1,13 @@
+prod¡fundizar mas el primer capitulo, presenta mas definiciones, profundiza mas los conceptos, es muy resumido.
+
+del segundo capitulo explica que es un polo, un cero, define y da ejemplos.
+muestras ecuaciones dierenciales para explicar un modelo
+
+arrelga la figura 1.2 la linea que llega al bloque H no debe llegar por encima, siempre llega horizontal a la caja no con una linea vertical.
+ explica de mejor manera el tema de estabilidad segun la posicion de la parte real de los polos y toda la tabla en el puntop 2.1.2
+ 
+ desarrolla mejor el ejemplo de codigo de matlab en la seccion 2.1.4, esta apenas mencionado, explica el porque esta ahi, y aplicaciones de verdad que sirvan a resolver algo o a mostrar y determinar cuando un sistema es estable o no 
+ 
+ revisa en general los graficos, veo que la caja de retroalimentacion se conecta verticalmente y deberia ser una L inversa.
+ 
+ 
