@@ -847,3 +847,31 @@ carpeta es ahora la versión "solo código" de los mismos pares que
 aparecen narrados en los capítulos.
 
 Recompilado: `libro-completo.pdf` pasó de 101 a **103 páginas**.
+
+### Aclaración pedida: de dónde salen las fórmulas de Bode (capítulo 03)
+
+Pregunta del usuario: no entendía de dónde salían las fórmulas de
+magnitud/fase de Bode, y por qué en el ejercicio de $G(s)=4(3s+2)/(s+1)^3$
+(sección "6" del capítulo 3, la que el usuario identificó como "3.6" por
+la numeración automática de LaTeX) el término $\tan^{-1}(\omega)$ aparece
+**tres veces** en vez de escribirse una sola vez como $3\tan^{-1}(\omega)$.
+
+Se agregó una subsección nueva, "De dónde salen las fórmulas de magnitud
+y fase", antes del primer ejercicio de Bode: deriva todo desde que
+$G(j\omega)$ es un número complejo, con las dos reglas de
+magnitud/fase de un producto y un cociente de complejos, y de ahí una
+tabla "por cada polo/cero, qué le suma o resta a la magnitud y a la
+fase" — la misma tabla que hace falta para cualquier $G(s)$, no solo para
+el ejercicio puntual.
+
+Se agregó también una nota justo en el ejercicio de los tres polos
+repetidos: $(s+1)^3 = (s+1)(s+1)(s+1)$ son **tres polos idénticos**, no
+"un polo al cubo", y cada uno resta su propio término de fase por la
+regla de la tabla — de ahí que se escriba tres veces. Se explica que
+escribirlo así (en vez de $3\tan^{-1}(\omega)$) es deliberado, porque es
+la forma que generaliza a un caso con polos repetidos pero no todos
+iguales, como $(s+1)^2(s+5)$.
+
+Verificado numéricamente antes de escribir: la fórmula del libro para
+$\omega=2$ da $|G|=2.2627$, fase $=-118.74°$, coincide exacto con
+`ct.frequency_response` de `python-control`.

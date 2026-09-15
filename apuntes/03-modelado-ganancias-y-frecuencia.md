@@ -140,6 +140,51 @@ $$
 |G|_{dB} = 20 \log_{10}|G|
 $$
 
+### De dónde salen las fórmulas de magnitud y fase
+
+*Sección agregada porque el cuaderno usa las fórmulas de magnitud y fase
+sin mostrar de dónde salen — acá se deriva, para que el ejercicio de
+abajo (y sobre todo el de tres polos repetidos, más adelante) no dependa
+de memorizarlas.*
+
+Todo sale de que $G(j\omega)$, para cada $\omega$ que elijas, **es un
+número complejo**. Y todo número complejo $z=a+jb$ tiene una magnitud y
+un ángulo:
+
+$$
+|z| = \sqrt{a^2+b^2} \qquad\qquad \angle z = \tan^{-1}\!\left(\frac{b}{a}\right)
+$$
+
+Lo único que hace falta además es saber cómo se combinan magnitud y fase
+cuando dos complejos se **multiplican** o se **dividen** — y esa regla es
+siempre la misma, para cualquier $z_1$, $z_2$:
+
+$$
+|z_1 z_2| = |z_1|\,|z_2|
+\qquad\qquad
+\angle(z_1 z_2) = \angle z_1 + \angle z_2
+$$
+
+$$
+\left|\frac{z_1}{z_2}\right| = \frac{|z_1|}{|z_2|}
+\qquad\qquad
+\angle\!\left(\frac{z_1}{z_2}\right) = \angle z_1 - \angle z_2
+$$
+
+**Las magnitudes se multiplican o dividen. Las fases se suman o restan.**
+Como $G(s)$ siempre se puede escribir como un producto de factores
+$(s+a)$ arriba (ceros) y abajo (polos), esa regla da directamente una
+receta por factor:
+
+| Factor $(s+a)$ | Aporte a la magnitud | Aporte a la fase |
+|---|---|---|
+| en el numerador (cero) | multiplica $\sqrt{\omega^2+a^2}$ | suma $\tan^{-1}(\omega/a)$ |
+| en el denominador (polo) | divide $\sqrt{\omega^2+a^2}$ | resta $\tan^{-1}(\omega/a)$ |
+
+Un polo o cero repetido (como $(s+1)^3$ más abajo) cuenta **una vez por
+cada copia del factor** — no hace falta una regla distinta para
+exponentes, la misma tabla aplicada tres veces ya lo resuelve.
+
 ### Ejercicio
 
 $$
@@ -173,6 +218,17 @@ $$
 \angle G(j\omega) = \tan^{-1}\!\left(\frac{3\omega}{2}\right)
 - \tan^{-1}(\omega) - \tan^{-1}(\omega) - \tan^{-1}(\omega)
 $$
+
+**Por qué el $\tan^{-1}(\omega)$ aparece tres veces**: $(s+1)^3$ no es "un
+polo elevado al cubo", son **tres polos idénticos en $s=-1$** —
+$(s+1)^3=(s+1)(s+1)(s+1)$. Por la tabla de la sección anterior, cada
+factor del denominador resta su propio $\tan^{-1}(\omega/a)$ a la fase, y
+como los tres factores son iguales, se resta el mismo término tres veces.
+Da exactamente lo mismo que escribir $3\tan^{-1}(\omega)$, pero dejarlo
+como tres términos separados hace explícito que viene de "un aporte por
+cada polo", que es la regla que se generaliza a un caso como
+$(s+1)^2(s+5)$, donde los tres factores ya no son iguales:
+$\tan^{-1}(\omega) + \tan^{-1}(\omega) + \tan^{-1}(\omega/5)$.
 
 Nota al margen: si el denominador tiene una $s$, como en
 $\dfrac{1}{s(s+a)}$, hay **integrador**.
