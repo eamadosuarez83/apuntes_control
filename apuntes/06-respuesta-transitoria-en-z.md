@@ -174,7 +174,7 @@ s_3 = \frac{1}{0.2}\ln(0.7) = -1.78
 \qquad
 K_{st} = 15.33
 \qquad
-\text{sobrepico: } 23.5\,\%
+\text{sobrepico: } 23.5\%
 $$
 
 ### Si se cambia el cero a $0.7$
@@ -184,7 +184,7 @@ G(z) = \frac{z - 0.7}{(z - 0.4)\,(z^2 - 1.6z + 0.8)}
 \qquad
 K_{st} = 2.5
 \qquad
-\text{sobrepico: } 80.4\,\%
+\text{sobrepico: } 80.4\%
 $$
 
 > **La inestabilidad la dan los polos; los ceros no influyen.**

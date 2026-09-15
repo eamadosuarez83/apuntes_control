@@ -3,8 +3,9 @@
     python3 frecuencia.py   ->  genera los .svg y los .pdf
 
 El margen de ganancia se ilustra sobre un sistema de tercer orden genérico:
-G(s) = 1/[(s+1)(s+2)(s+3)]. Los valores son ilustrativos, no salen del
-cuaderno; lo que reproduce la figura es la construcción gráfica.
+G(s) = K/[(s+1)(s+2)(s+3)]. La forma de la curva es ilustrativa (no sale
+del cuaderno), pero K se ajustó para que el MG que muestra la figura
+coincida con el MG = -6 dB anotado en el texto (09-error-estacionario...).
 """
 import matplotlib
 matplotlib.use('Agg')
@@ -15,7 +16,8 @@ import numpy as np
 def margen_ganancia(nombre='margen_ganancia'):
     w = np.logspace(-1, 1.6, 800)
     jw = 1j * w
-    G = 1 / ((jw + 1) * (jw + 2) * (jw + 3))
+    K = 119.08  # ajustado para que MG salga -6 dB, igual al texto
+    G = K / ((jw + 1) * (jw + 2) * (jw + 3))
     mag = 20 * np.log10(np.abs(G))
     fase = np.degrees(np.unwrap(np.angle(G)))
 

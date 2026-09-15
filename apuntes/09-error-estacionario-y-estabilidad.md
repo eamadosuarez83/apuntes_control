@@ -126,7 +126,7 @@ $$
 ### Ejemplo
 
 $$
-E_{ss} = 0.05 \;\longrightarrow\; 5\,\%
+E_{ss} = 0.05 \;\longrightarrow\; 5\%
 $$
 
 $$
